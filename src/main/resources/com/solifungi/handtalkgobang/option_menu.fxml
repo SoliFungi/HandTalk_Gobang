@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.control.Button?>
+
+<VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: #8fd5c8"
+      xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.MenuController">
+
+    <Button text="Back" alignment="CENTER" onAction="#backToMainMenu"/>
+</VBox>
