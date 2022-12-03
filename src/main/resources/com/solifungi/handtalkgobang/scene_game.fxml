@@ -9,7 +9,8 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.GameController">
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.GameController"
+            fx:id="gamePane" minWidth="960" minHeight="720">
     <top>
         <ToolBar>
             <Region/>
@@ -27,12 +28,11 @@
             <VBox alignment="TOP_CENTER" >
                 <Text text="Gobang Game" textAlignment="CENTER"/>
             </VBox>
-            <Button text="Options" alignment="CENTER_RIGHT" layoutY="100" onAction="#openInGameOptions"/>
-            <Button text="Save and Quit" alignment="CENTER_RIGHT" layoutY="-100" onAction="#onGameSaved"/>
+            <Button text="%button.game_options" alignment="CENTER_RIGHT" layoutY="100" onAction="#openInGameOptions"/>
+            <Button text="%button.save_game" alignment="CENTER_RIGHT" layoutY="-100" onAction="#onGameSaved"/>
         </VBox>
     </right>
-    <left>
-        <Text text="Gobang Game" textAlignment="CENTER"/>
+    <center>
         <Pane fx:id="boardPane"/>
-    </left>
+    </center>
 </BorderPane>

@@ -1,20 +1,21 @@
 package com.solifungi.handtalkgobang.util.handlers;
 
-import com.solifungi.handtalkgobang.util.Reference;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 public class EnumHandler {
-    public enum EnumSide{
-        BLACK(1,"black", Reference.BLACK_IMAGE),
-        WHITE(2,"white", Reference.WHITE_IMAGE);
+    public enum Side {
+        BLACK(1,"black", Color.BLACK),
+        WHITE(2,"white", Color.WHITE);
 
         private final int sign;
         private final String name;
-        private final String imageUrl;
+        private final Paint color;
 
-        EnumSide(int sign, String name, String imageUrl){
+        Side(int sign, String name, Paint color){
             this.sign = sign;
             this.name = name;
-            this.imageUrl = imageUrl;
+            this.color = color;
         }
 
         public String getName(){
@@ -25,16 +26,20 @@ public class EnumHandler {
             return this.sign;
         }
 
-        public String getImageUrl() {
-            return this.imageUrl;
+        public Paint getColor(){
+            return this.color;
         }
 
         @Override
         public String toString(){
-            return "current_side: " + this.name;
+            return this.name;
         }
 
-        public static EnumSide bySign(int sign){
+        public static Side toOpposite(Side side){
+            return side.equals(Side.BLACK) ? Side.WHITE : Side.BLACK;
+        }
+
+        public static Side bySign(int sign){
             if(sign == 1){
                 return BLACK;
             }
@@ -46,11 +51,11 @@ public class EnumHandler {
             }
         }
 
-        public static EnumSide byName(String name){
-            if(name.equals("black")){
+        public static Side byName(String name){
+            if(name.equalsIgnoreCase("black")){
                 return BLACK;
             }
-            else if(name.equals("white")){
+            else if(name.equalsIgnoreCase("white")){
                 return WHITE;
             }
             else{
@@ -60,14 +65,14 @@ public class EnumHandler {
     }
 
 
-    public enum EnumBoardType{
+    public enum BoardType {
         LARGE(19),
         DEFAULT(15),
         SMALL(13);
 
         private final int size;
 
-        EnumBoardType(int size){
+        BoardType(int size){
             this.size = size;
         }
 
@@ -80,7 +85,7 @@ public class EnumHandler {
             return "type: " + this.size + " * " + this.size;
         }
 
-        public static EnumBoardType bySize(int size){
+        public static BoardType bySize(int size){
             if(size == 19){
                 return LARGE;
             }
@@ -94,5 +99,10 @@ public class EnumHandler {
                 throw new IllegalArgumentException();
             }
         }
+    }
+
+
+    public enum AILevel {
+        EASY, NORMAL, HARD, LUNATIC
     }
 }

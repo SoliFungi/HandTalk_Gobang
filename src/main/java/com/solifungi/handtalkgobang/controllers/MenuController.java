@@ -33,7 +33,7 @@ public class MenuController implements IHandleStage
 
     @FXML
     protected void onGameStarted() {
-        handler.loadStage(StageHandler.GAME, Reference.GAME_FXML,"Gobang Game",960,720, StageStyle.DECORATED);
+        handler.loadStage(StageHandler.GAME, Reference.GAME_FXML,"Gobang Game", StageStyle.DECORATED);
         handler.changeStage(StageHandler.MAIN, StageHandler.GAME);
     }
 

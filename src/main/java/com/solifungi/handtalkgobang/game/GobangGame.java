@@ -1,109 +1,67 @@
 package com.solifungi.handtalkgobang.game;
 
-import com.solifungi.handtalkgobang.HandTalkApp;
-import com.solifungi.handtalkgobang.controllers.GameController;
-import com.solifungi.handtalkgobang.util.Reference;
-import com.solifungi.handtalkgobang.util.handlers.EnumHandler.EnumBoardType;
-import com.solifungi.handtalkgobang.util.handlers.EnumHandler.EnumSide;
-import javafx.fxml.FXMLLoader;
+import com.solifungi.handtalkgobang.util.handlers.EnumHandler.BoardType;
+import com.solifungi.handtalkgobang.util.handlers.EnumHandler.Side;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
+import java.util.ArrayList;
 
-public class GobangGame {
-    private String gameName = "untitled";
-    private EnumBoardType boardType;
-    private EnumSide currentSide = EnumSide.BLACK;
-    private boolean sideLock = false;
-    private int[][] gameManual;
-    private ChessPiece lastPiece;
-
-    public GobangGame(EnumBoardType type, String filename){
-        this.boardType = type;
-        if(filename.equals("new")){
-            initGame();
-        }
-        else{
-            readGameFromSave(filename);
-        }
-    }
-
-    public GobangGame(EnumBoardType type){
-        this(type, "new");
-    }
+public class GobangGame
+{
+    private String gameTitle = "untitled";
+    private BoardType boardType = GameConfigs.currentType;
+    private Side currentSide = Side.BLACK;
+    private int winningSide = -1; // -1:underway 0:draw 1:black 2:white
+    private ArrayList<ChessPiece> piecesList;
+    private int pieceCount = 0;
+    private int[][] gameManual = new int[boardType.getSize()][boardType.getSize()];
+    private ChessPiece lastPiece = null;
+    public boolean sideLock = false;
 
     public GobangGame(){
-        this(EnumBoardType.DEFAULT);
+        if(GameConfigs.tracer){
+            piecesList = new ArrayList<>();
+        }
     }
-
 
     /* RunGame Methods */
-    public void initGame(){
-        this.gameManual = new int[boardType.getSize()][boardType.getSize()];
-        for(int i = 0; i < boardType.getSize(); i++){
-            for(int j = 0; j < boardType.getSize(); j++)
-                this.gameManual[i][j] = 0;
-        }
-    }
-
-    public void readGameFromSave(String filename){
-        try {
-            File save = new File(filename);
-            this.gameName = filename;
-            Scanner saveLoader = new Scanner(save);
-            saveLoader.next(); //Discard prompts
-            this.boardType = EnumBoardType.bySize(saveLoader.nextInt());
-            saveLoader.nextLine(); //Line break
-            saveLoader.next(); //Discard prompts
-            this.currentSide = EnumSide.byName(saveLoader.nextLine());
-
-            this.gameManual = new int[boardType.getSize()][boardType.getSize()];
-            for(int i = 0; i < boardType.getSize(); i++){
-                for(int j = 0; j < boardType.getSize(); j++){
-                    this.gameManual[i][j] = saveLoader.nextInt();
-                }
-                saveLoader.nextLine();
+    public boolean playRound(int[] pos){
+        if(gameManual[pos[0]][pos[1]] == 0){
+            gameManual[pos[0]][pos[1]] = currentSide.getSign();
+            lastPiece = new ChessPiece(currentSide, pos);
+            pieceCount += 1;
+            if(GameConfigs.tracer) piecesList.add(lastPiece);
+            if(!sideLock) changeSide();
+            if(isWinning()){
+                setWinningSide(lastPiece.getSide().getSign());
+            }else if(pieceCount == boardType.getSize() * boardType.getSize()){
+                setWinningSide(0);
             }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            return true;
         }
-    }
-
-    public void playRound(int[] pos){
-        if(this.gameManual[pos[0]][pos[1]] != 0){
-            throw new UnsupportedOperationException();
-        }
-        else{
-            this.gameManual[pos[0]][pos[1]] = this.currentSide.getSign();
-            this.lastPiece = new ChessPiece(this.currentSide, pos);
-            if(!this.sideLock) {
-                changeSide();
-            }
-        }
+        return false;
     }
 
     private void changeSide(){
-        setCurrentSide(this.currentSide == EnumSide.BLACK ? EnumSide.WHITE : EnumSide.BLACK);
+        setCurrentSide(Side.toOpposite(currentSide));
     }
 
-    private boolean isWinning(){
+    public boolean isWinning(){
         return judgeRow(lastPiece) || judgeColumn(lastPiece) || judgeMainDiag(lastPiece) || judgeSubDiag(lastPiece);
     }
 
     private boolean judgeRow(ChessPiece piece){
         int count= -1;
-        EnumSide side = piece.getSide();
+        Side side = piece.getSide();
         int x = piece.getPos()[0];
         int y = piece.getPos()[1];
         while(y >= 0){
-            if(this.gameManual[x][y] != side.getSign()) break;
+            if(gameManual[x][y] != side.getSign()) break;
             count += 1;
             y -= 1;
         }
         y = piece.getPos()[1];
-        while(y < this.boardType.getSize()){
-            if(this.gameManual[x][y] != side.getSign()) break;
+        while(y < boardType.getSize()){
+            if(gameManual[x][y] != side.getSign()) break;
             count += 1;
             y += 1;
         }
@@ -112,17 +70,17 @@ public class GobangGame {
 
     private boolean judgeColumn(ChessPiece piece){
         int count= -1;
-        EnumSide side = piece.getSide();
+        Side side = piece.getSide();
         int x = piece.getPos()[0];
         int y = piece.getPos()[1];
         while(x >= 0){
-            if(this.gameManual[x][y] != side.getSign()) break;
+            if(gameManual[x][y] != side.getSign()) break;
             count += 1;
             x -= 1;
         }
         x = piece.getPos()[0];
-        while(x < this.boardType.getSize()){
-            if(this.gameManual[x][y] != side.getSign()) break;
+        while(x < boardType.getSize()){
+            if(gameManual[x][y] != side.getSign()) break;
             count += 1;
             x += 1;
         }
@@ -131,19 +89,19 @@ public class GobangGame {
 
     private boolean judgeMainDiag(ChessPiece piece){
         int count= -1;
-        EnumSide side = piece.getSide();
+        Side side = piece.getSide();
         int x = piece.getPos()[0];
         int y = piece.getPos()[1];
         while(x >= 0 && y >= 0){
-            if(this.gameManual[x][y] != side.getSign()) break;
+            if(gameManual[x][y] != side.getSign()) break;
             count += 1;
             x -= 1;
             y -= 1;
         }
         x = piece.getPos()[0];
         y = piece.getPos()[1];
-        while(x < this.boardType.getSize() && y < this.boardType.getSize()){
-            if(this.gameManual[x][y] != side.getSign()) break;
+        while(x < boardType.getSize() && y < boardType.getSize()){
+            if(gameManual[x][y] != side.getSign()) break;
             count += 1;
             x += 1;
             y += 1;
@@ -153,46 +111,51 @@ public class GobangGame {
 
     private boolean judgeSubDiag(ChessPiece piece){
         int count= -1;
-        EnumSide side = piece.getSide();
+        Side side = piece.getSide();
         int x = piece.getPos()[0];
         int y = piece.getPos()[1];
-        while(x >= 0 && y < this.boardType.getSize()){
-            if(this.gameManual[x][y] != side.getSign()) break;
+        while(x >= 0 && y < boardType.getSize()){
+            if(gameManual[x][y] != side.getSign()) break;
             count += 1;
             x -= 1;
             y += 1;
         }
         x = piece.getPos()[0];
         y = piece.getPos()[1];
-        while(x < this.boardType.getSize() && y >= 0){
-            if(this.gameManual[x][y] != side.getSign()) break;
+        while(x < boardType.getSize() && y >= 0){
+            if(gameManual[x][y] != side.getSign()) break;
             count += 1;
-            x -= 1;
-            y += 1;
+            x += 1;
+            y -= 1;
         }
         return count == 5;
     }
 
 
     /* Sets and Gets */
-    public void setCurrentSide(EnumSide side){
+    public void setCurrentSide(Side side){
         this.currentSide = side;
     }
 
-    public EnumSide getCurrentSide(){
+    public Side getCurrentSide(){
         return this.currentSide;
     }
 
-    public void setSideLock(boolean isLock){
-        this.sideLock = isLock;
+    public String getGameTitle(){
+        return this.gameTitle;
     }
 
-    public String getGameName(){
-        return this.gameName;
+    public void setGameTitle(String title){
+        this.gameTitle = title;
     }
 
-    public EnumBoardType getBoardType(){
+    public BoardType getBoardType(){
         return this.boardType;
+    }
+
+    public void setBoardType(int size){
+        this.boardType = BoardType.bySize(size);
+        this.gameManual = new int[boardType.getSize()][boardType.getSize()];
     }
 
     public int[][] getGameManual(){
@@ -201,5 +164,29 @@ public class GobangGame {
 
     public ChessPiece getLastPiece(){
         return this.lastPiece;
+    }
+
+    public void setLastPiece(ChessPiece piece){
+        this.lastPiece = piece;
+    }
+
+    public int getWinningSide() {
+        return winningSide;
+    }
+
+    public void setWinningSide(int side) {
+        this.winningSide = side;
+    }
+
+    public int getPieceCount() {
+        return pieceCount;
+    }
+
+    public void setPieceCount(int count) {
+        this.pieceCount = count;
+    }
+
+    public ArrayList<ChessPiece> getPiecesList(){
+        return piecesList;
     }
 }
