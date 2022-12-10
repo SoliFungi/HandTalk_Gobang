@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.GameController"
+            fx:id="gamePane" minWidth="960" minHeight="720">
+    <top>
+        <ToolBar>
+            <Region/>
+            <HBox>
+                <Button text="File"/>
+                <Button text="Edit"/>
+                <Button text="Settings"/>
+                <Button text="Stop"/>
+                <Button text="Back" alignment="CENTER_RIGHT"/>
+            </HBox>
+        </ToolBar>
+    </top>
+    <right>
+        <VBox>
+            <VBox alignment="TOP_CENTER" >
+                <Text text="Gobang Game" textAlignment="CENTER"/>
+            </VBox>
+            <Button text="%button.game_options" alignment="CENTER_RIGHT" layoutY="100" onAction="#openInGameOptions"/>
+            <Button text="%button.save_game" alignment="CENTER_RIGHT" layoutY="-100" onAction="#onGameSaved"/>
+        </VBox>
+    </right>
+    <center>
+        <Pane fx:id="boardPane"/>
+    </center>
+</BorderPane>

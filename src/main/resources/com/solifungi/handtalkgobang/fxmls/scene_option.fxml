@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.layout.Background?>
+<?import javafx.scene.layout.BackgroundImage?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.VBox?>
+
+<?import javafx.scene.text.Text?>
+<BorderPane style="-fx-padding: 30px 30px 7px 30px" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.solifungi.handtalkgobang.controllers.ConfigController">
+    <background>
+        <Background>
+            <images>
+                <BackgroundImage>
+                    <image>
+                        <Image url="@../images/background.png" requestedWidth="480" requestedHeight="360" smooth="true"/>
+                    </image>
+                </BackgroundImage>
+            </images>
+        </Background>
+    </background>
+
+    <center>
+        <HBox style="-fx-background-color: rgba(255,255,255,0.5); -fx-background-radius: 5%">
+            <padding>
+                <Insets top="15" left="5" right="5"/>
+            </padding>
+
+            <GridPane hgap="10" vgap="15" alignment="CENTER">
+                <!--> 音乐音量 <-->
+                <Label text="%text.music_volume" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                <HBox spacing="10" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                    <Slider fx:id="music" prefWidth="200" majorTickUnit="10" minorTickCount="10" snapToTicks="true"/>
+                    <Text fx:id="musicNum" style="-fx-font-size: 12pt"/>
+                </HBox>
+
+                <!--> 音效音量 <-->
+                <Label text="%text.effect_volume" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <HBox spacing="10" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                    <Slider fx:id="effect" prefWidth="200" majorTickUnit="10" minorTickCount="10" snapToTicks="true"/>
+                    <Text fx:id="effectNum" style="-fx-font-size: 12pt"/>
+                </HBox>
+
+                <!--> 是否全屏 <-->
+                <Label text="%text.fullscreen" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                <fx:define>
+                    <ToggleGroup fx:id="fullscreen"/>
+                </fx:define>
+                <HBox spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="1">
+                    <RadioButton text="Fullscreen" toggleGroup="$fullscreen" onAction="#fullscreen"/>
+                    <RadioButton text="Window" toggleGroup="$fullscreen" onAction="#window"/>
+                </HBox>
+
+                <!--> 语言设置 <-->
+                <Label text="%text.language" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                <ChoiceBox fx:id="languages" maxWidth="130" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="中文"/>
+                            <String fx:value="English"/>
+                            <String fx:value="English(Default)"/>
+                        </FXCollections>
+                    </items>
+                </ChoiceBox>
+
+                <!--> 棋盘大小 <-->
+                <Label text="%text.board_size" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+                <fx:define>
+                    <ToggleGroup fx:id="boardSize"/>
+                </fx:define>
+                <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1">
+                    <RadioButton text="19×19" toggleGroup="$boardSize" onAction="#setSize"/>
+                    <RadioButton text="15×15" toggleGroup="$boardSize" onAction="#setSize"/>
+                    <RadioButton text="13×13" toggleGroup="$boardSize" onAction="#setSize"/>
+                </HBox>
+
+                <!--> AI难度 <-->
+                <Label text="%text.ai_level" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
+                <fx:define>
+                    <ToggleGroup fx:id="aiLevel"/>
+                </fx:define>
+                <HBox fx:id="aiLvl" spacing="15" GridPane.rowIndex="5" GridPane.columnIndex="1">
+                    <RadioButton text="EASY" toggleGroup="$aiLevel" onAction="#setLevel"/>
+                    <RadioButton text="NORMAL" toggleGroup="$aiLevel" onAction="#setLevel"/>
+                    <RadioButton text="HARD" toggleGroup="$aiLevel" onAction="#setLevel"/>
+                    <RadioButton text="LUNATIC" toggleGroup="$aiLevel" onAction="#setLevel"/>
+                </HBox>
+
+                <!--> 保存落子顺序 <-->
+                <Label text="%text.tracer" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
+                <fx:define>
+                    <ToggleGroup fx:id="tracer"/>
+                </fx:define>
+                <HBox spacing="10" GridPane.rowIndex="6" GridPane.columnIndex="1">
+                    <RadioButton text="Yes" toggleGroup="$tracer" onAction="#setTracer"/>
+                    <RadioButton text="No" toggleGroup="$tracer" onAction="#setTracer"/>
+                </HBox>
+            </GridPane>
+        </HBox>
+    </center>
+
+    <bottom>
+        <VBox>
+            <padding>
+                <Insets top="7"/>
+            </padding>
+            <Button text="%button.back_to_menu" alignment="BOTTOM_RIGHT" onAction="#backToMenu"/>
+        </VBox>
+    </bottom>
+</BorderPane>

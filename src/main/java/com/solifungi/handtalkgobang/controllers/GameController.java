@@ -91,7 +91,7 @@ public class GameController implements IHandleStage
         btSave.setOnAction(event -> {
             FileChooser fileSaver = new FileChooser();
             configFileSaver(fileSaver);
-            File file = fileSaver.showSaveDialog(handler.getStage(StageHandler.GAME));
+            File file = fileSaver.showSaveDialog(handler.getStage(Reference.GAME));
             if(file != null && FileHandler.saveGame(game, file)){
                 Alert info = new Alert(Alert.AlertType.INFORMATION);
                 info.setHeaderText("Saved successfully!");
@@ -115,14 +115,14 @@ public class GameController implements IHandleStage
     @FXML
     protected void onGameSaved(){
         //save code
-        handler.unloadStage(StageHandler.GAME);
-        handler.getStage(StageHandler.MAIN).show();
+        handler.unloadStage(Reference.GAME);
+        handler.getStage(Reference.MAIN).show();
     }
 
     @FXML
     protected void openInGameOptions() {
         //stop game(time count)
-        handler.loadStage(StageHandler.OPTION, Reference.OPTION_IN_FXML, "Options", StageStyle.UTILITY);
+        handler.loadStage(Reference.OPTION_IN, "Options", Reference.OPTION_CSS, StageStyle.UTILITY);
     }
 
 }

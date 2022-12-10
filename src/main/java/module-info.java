@@ -1,6 +1,7 @@
 module com.solifungi.handtalkgobang {
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.media;
     requires org.jetbrains.annotations;
 
 

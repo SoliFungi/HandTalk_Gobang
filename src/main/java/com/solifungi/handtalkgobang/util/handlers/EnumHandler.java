@@ -86,23 +86,40 @@ public class EnumHandler {
         }
 
         public static BoardType bySize(int size){
-            if(size == 19){
-                return LARGE;
-            }
-            else if(size == 15){
-                return DEFAULT;
-            }
-            else if(size == 13){
-                return SMALL;
-            }
-            else{
-                throw new IllegalArgumentException();
+            switch(size){
+                case 19: return LARGE;
+                case 15: return DEFAULT;
+                case 13: return SMALL;
+                default: throw new IllegalArgumentException();
             }
         }
     }
 
 
     public enum AILevel {
-        EASY, NORMAL, HARD, LUNATIC
+        EASY("easy"),
+        NORMAL("normal"),
+        HARD("hard"),
+        LUNATIC("lunatic");
+
+        private final String name;
+
+        AILevel(String name){
+            this.name = name;
+        }
+
+        public String getName(){
+            return this.name;
+        }
+
+        public static AILevel byName(String nameIn){
+            switch(nameIn){
+                case "easy": return EASY;
+                case "normal": return NORMAL;
+                case "hard": return HARD;
+                case "lunatic": return LUNATIC;
+                default: throw new IllegalArgumentException();
+            }
+        }
     }
 }

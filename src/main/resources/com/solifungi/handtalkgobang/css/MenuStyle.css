@@ -1,0 +1,20 @@
+.button{
+    -fx-focus-traversable: false;
+    -fx-font: bolder 16pt HGLB_CNKI;
+    -fx-background-color: rgba(255,241,194,0.5);
+}
+.button:hover{
+    -fx-background-color: rgba(255,252,168,0.8);
+}
+.muteBt{
+    -fx-pref-height: 50px;
+    -fx-pref-width: 30px;
+    -fx-background-radius: 50%;
+    -fx-background-color: transparent;
+}
+.muteBt:hover{
+    -fx-background-color: rgba(255,241,194,0.3);
+}
+.title{
+    -fx-font: 36pt HGDGY_CNKI;
+}

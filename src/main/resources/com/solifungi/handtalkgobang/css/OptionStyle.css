@@ -1,0 +1,42 @@
+.button{
+    -fx-focus-traversable: false;
+    -fx-font: bolder 12pt HGLB_CNKI;
+    -fx-background-color: rgba(255,241,194,0.5);
+}
+
+.button:hover{
+    -fx-background-color: rgba(255,252,168,0.8);
+}
+
+.label{
+    -fx-min-width: 90;
+    -fx-text-alignment: center;
+    -fx-font: 12pt "Microsoft YaHei";
+}
+
+.slider, .radio-button, .choice-box{
+    -fx-focus-traversable: false;
+    -fx-font-size: 10pt;
+}
+
+.choice-box > .label{
+    -fx-font-size: 10pt;
+    -fx-min-width: -1;
+}
+
+#aiLvl > .radio-button{
+    -fx-font-size: 9pt;
+}
+
+.label:hover{
+    -fx-font-weight: bold;
+    -fx-text-fill: #d06f6f;
+}
+
+.choice-box > .label:hover{
+    -fx-font-weight: normal;
+    -fx-text-fill: black;
+}
+
+
+

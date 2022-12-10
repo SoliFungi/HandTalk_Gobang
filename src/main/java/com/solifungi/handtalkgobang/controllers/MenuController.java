@@ -1,10 +1,13 @@
 package com.solifungi.handtalkgobang.controllers;
 
+import com.solifungi.handtalkgobang.game.GameConfigs;
 import com.solifungi.handtalkgobang.util.IHandleStage;
 import com.solifungi.handtalkgobang.util.Reference;
+import com.solifungi.handtalkgobang.util.handlers.SoundHandler;
 import com.solifungi.handtalkgobang.util.handlers.StageHandler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.stage.StageStyle;
 
 public class MenuController implements IHandleStage
@@ -17,36 +20,56 @@ public class MenuController implements IHandleStage
     }
 
     @FXML
+    private void initialize(){
+        if(GameConfigs.musicMuted){
+            mute.setVisible(false);
+            play.setVisible(true);
+        }
+    }
+
+    @FXML
     protected void quitGame() {
         Platform.exit();
     }
 
     @FXML
     protected void mainMenuToOptions() {
-        handler.switchScene(StageHandler.MAIN, Reference.OPTION_FXML);
-    }
-
-    @FXML
-    protected void backToMainMenu() {
-        handler.switchScene(StageHandler.MAIN, Reference.MAIN_FXML);
+        handler.switchScene(Reference.MAIN, Reference.OPTION, Reference.OPTION_CSS);
     }
 
     @FXML
     protected void onGameStarted() {
-        handler.loadStage(StageHandler.GAME, Reference.GAME_FXML,"Gobang Game", StageStyle.DECORATED);
-        handler.changeStage(StageHandler.MAIN, StageHandler.GAME);
+        handler.loadStage(Reference.GAME,"Gobang Game", Reference.GAME_CSS, StageStyle.DECORATED);
+        handler.changeStage(Reference.MAIN, Reference.GAME);
     }
 
     @FXML
     protected void saveAndCloseInGameOptions(){
         //save code
 
-        handler.unloadStage(StageHandler.OPTION);
+        handler.unloadStage(Reference.OPTION_IN);
     }
 
     @FXML
     protected void closeInGameOptions(){
-        handler.unloadStage(StageHandler.OPTION);
+        handler.unloadStage(Reference.OPTION_IN);
     }
 
+    @FXML Button mute, play;
+
+    @FXML
+    protected void mute(){
+        SoundHandler.muteAll();
+        mute.setVisible(false);
+        play.setVisible(true);
+        GameConfigs.musicMuted = true;
+    }
+
+    @FXML
+    protected void play(){
+        SoundHandler.playAll();
+        play.setVisible(false);
+        mute.setVisible(true);
+        GameConfigs.musicMuted = false;
+    }
 }
