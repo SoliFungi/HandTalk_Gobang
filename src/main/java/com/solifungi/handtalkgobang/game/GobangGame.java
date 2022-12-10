@@ -11,17 +11,11 @@ public class GobangGame
     private BoardType boardType = GameConfigs.currentType;
     private Side currentSide = Side.BLACK;
     private int winningSide = -1; // -1:underway 0:draw 1:black 2:white
-    private ArrayList<ChessPiece> piecesList;
+    private final ArrayList<ChessPiece> piecesList = new ArrayList<>();
     private int pieceCount = 0;
     private int[][] gameManual = new int[boardType.getSize()][boardType.getSize()];
     private ChessPiece lastPiece = null;
     public boolean sideLock = false;
-
-    public GobangGame(){
-        if(GameConfigs.tracer){
-            piecesList = new ArrayList<>();
-        }
-    }
 
     /* RunGame Methods */
     public boolean playRound(int[] pos){

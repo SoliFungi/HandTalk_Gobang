@@ -3,6 +3,7 @@ package com.solifungi.handtalkgobang.controllers;
 import com.solifungi.handtalkgobang.game.GameConfigs;
 import com.solifungi.handtalkgobang.util.IHandleStage;
 import com.solifungi.handtalkgobang.util.Reference;
+import com.solifungi.handtalkgobang.util.handlers.FileHandler;
 import com.solifungi.handtalkgobang.util.handlers.SoundHandler;
 import com.solifungi.handtalkgobang.util.handlers.StageHandler;
 import javafx.fxml.FXML;
@@ -48,10 +49,10 @@ public class ConfigController implements IHandleStage
         });
 
         // Init choice box selection
-        if(GameConfigs.currentLocale.toString().equals("zh_CN")){
+        if(GameConfigs.currentLocale.equals(Locale.CHINA)){
             languages.getSelectionModel().select(0);
         }
-        else if(GameConfigs.currentLocale.toString().equals("en_US")){
+        else if(GameConfigs.currentLocale.equals(Locale.US)){
             languages.getSelectionModel().select(1);
         }
         else{
@@ -59,9 +60,9 @@ public class ConfigController implements IHandleStage
         }
         languages.getSelectionModel().selectedIndexProperty().addListener(ob -> {
             switch(languages.getSelectionModel().getSelectedIndex()){
-                case 0: GameConfigs.currentLocale = new Locale("zh","CN"); break;
-                case 1: GameConfigs.currentLocale = new Locale("en","US"); break;
-                default: GameConfigs.currentLocale = new Locale("en");
+                case 0: GameConfigs.currentLocale = Locale.CHINA; break;
+                case 1: GameConfigs.currentLocale = Locale.US; break;
+                default: GameConfigs.currentLocale = Locale.ENGLISH;
             }
             handler.refreshLocale();
         });
@@ -83,15 +84,8 @@ public class ConfigController implements IHandleStage
     }
 
     @FXML
-    protected void fullscreen(){
-        GameConfigs.isFullScreen = true;
-        //set fullscreen
-    }
-
-    @FXML
-    protected void window(){
-        GameConfigs.isFullScreen = false;
-        //set windowed
+    protected void setScreen(){
+        GameConfigs.isFullScreen = fullscreen.getToggles().get(0).isSelected();
     }
 
     @FXML
@@ -131,6 +125,6 @@ public class ConfigController implements IHandleStage
     @FXML
     protected void backToMenu() {
         handler.switchScene(Reference.OPTION, Reference.MAIN, Reference.MENU_CSS);
-        // config file i/o
+        FileHandler.saveConfigs();
     }
 }

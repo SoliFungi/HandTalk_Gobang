@@ -1,6 +1,7 @@
 package com.solifungi.handtalkgobang.util.handlers;
 
 import com.solifungi.handtalkgobang.game.GameConfigs;
+import com.solifungi.handtalkgobang.util.Utilities;
 import com.solifungi.handtalkgobang.util.handlers.EnumHandler.Side;
 import com.solifungi.handtalkgobang.game.ChessPiece;
 import com.solifungi.handtalkgobang.game.GobangGame;
@@ -35,8 +36,11 @@ public class FileHandler
         GobangGame game = new GobangGame();
         try{
             Scanner scanner = new Scanner(file);
-            String analyzer; // String analyzer
+            String analyzer;
+
+            // Read from .txt
             if(file.toString().matches(".*\\.txt")){
+                GameConfigs.setTracer(false);
                 game.setGameTitle(scanner.nextLine().split(":")[1].trim());
                 scanner.nextLine(); // Omit save time
                 scanner.nextLine(); // Unfinished for opponents
@@ -78,9 +82,28 @@ public class FileHandler
                     scanner.nextLine();
                 }
             }
-//            else{
-//                // read code for .htg
-//            }
+
+            // Read from .htg
+            else{
+                GameConfigs.setTracer(true);
+                game.setGameTitle(scanner.nextLine());
+                scanner.nextLine(); // Unfinished for opponents
+                scanner.nextLine(); // Unfinished for rules
+                game.setBoardType(Integer.parseInt(scanner.nextLine()));
+                game.setWinningSide(Integer.parseInt(scanner.nextLine()));
+                while(scanner.hasNextLine()){
+                    analyzer = scanner.nextLine();
+                    if(analyzer.equals("none") || analyzer.equals("")){
+                        break;
+                    }
+                    game.getPiecesList().add(ChessPiece.fromString(analyzer));
+                    game.setPieceCount(game.getPieceCount() + 1);
+                }
+                if(game.getPieceCount() > 0){
+                    game.setLastPiece(game.getPiecesList().get(game.getPieceCount() - 1));
+                    game.setCurrentSide(Side.toOpposite(game.getLastPiece().getSide()));
+                }
+            }
             return game;
         }catch(Exception e){
             throw new RuntimeException("Error loading game from this save file.");
@@ -160,14 +183,86 @@ public class FileHandler
             writer.println(game.getWinningSide());
             // Write game manual in proper sequence
             if(game.getPieceCount() == 0){
-                writer.println(0);
+                writer.println("none");
             }
             else{
                 for(int i = 0; i < game.getPiecesList().size(); i++)
-                    writer.println((i + 1) + " " + game.getPiecesList().get(i));
+                    writer.println(game.getPiecesList().get(i));
             }
         }
         return true;
     }
 
+    public static void saveConfigs(){
+        File dir = new File("configs");
+        File config = new File("configs/game.config");
+        try{
+            if((!dir.exists() && dir.mkdirs() || dir.exists()) && (!config.exists() && config.createNewFile() || config.exists())){
+                try(PrintWriter writer = new PrintWriter(config)){
+                    writer.println("/***** The configs should be written carefully in proper form! *****/");
+                    writer.println(" * Music Volume: volume of the BGM, value: integer from 0 to 100");
+                    writer.println(" * musicVol=" + GameConfigs.musicVolume);
+                    writer.println(" *");
+                    writer.println(" * Effect Volume: volume of sound effects, value: integer from 0 to 100");
+                    writer.println(" * effectVol=" + GameConfigs.effectVolume);
+                    writer.println(" *");
+                    writer.println(" * Screen Mode: fullscreen or not, value: fullscreen/window");
+                    writer.println(" * scMode=" + (GameConfigs.isFullScreen ? "fullscreen" : "window"));
+                    writer.println(" *");
+                    writer.println(" * Language: current locale, value: lang[_country] (e.g. zh_CN, en_US, en)");
+                    writer.println(" * locale=" + GameConfigs.currentLocale.toString());
+                    writer.println(" *");
+                    writer.println(" * Board Type: current board size, value: 13/15/19");
+                    writer.println(" * boardType=" + GameConfigs.getBoardSize());
+                    writer.println(" *");
+                    writer.println(" * AI Difficulty: difficulty level of game AI, value: easy/normal/hard/lunatic");
+                    writer.println(" * aiLvl=" + GameConfigs.getAILevel().getName());
+                    writer.println(" *");
+                    writer.println(" * Tracer: if the game traces piece order, value: true/false");
+                    writer.println(" * tracer=" + GameConfigs.isGameTraced());
+                    writer.println("/*******************************************************************/");
+                }
+            }
+        }catch(IOException e){
+            throw new RuntimeException("Config file cannot be found or created.");
+        }
+
+    }
+
+    public static void loadConfig(){
+        File config = new File("configs/game.config");
+        try{
+            Scanner scanner = new Scanner(config);
+            scanner.nextLine();
+            scanner.nextLine();
+            String analyzer = scanner.nextLine();
+            GameConfigs.musicVolume = Integer.parseInt(analyzer.split("=")[1]);
+            scanner.nextLine();
+            scanner.nextLine();
+            analyzer = scanner.nextLine();
+            GameConfigs.effectVolume = Integer.parseInt(analyzer.split("=")[1]);
+            scanner.nextLine();
+            scanner.nextLine();
+            analyzer = scanner.nextLine();
+            GameConfigs.isFullScreen = analyzer.split("=")[1].equalsIgnoreCase("fullscreen");
+            scanner.nextLine();
+            scanner.nextLine();
+            analyzer = scanner.nextLine();
+            GameConfigs.currentLocale = Utilities.localeFromString(analyzer.split("=")[1]);
+            scanner.nextLine();
+            scanner.nextLine();
+            analyzer = scanner.nextLine();
+            GameConfigs.setBoardType(Integer.parseInt(analyzer.split("=")[1]));
+            scanner.nextLine();
+            scanner.nextLine();
+            analyzer = scanner.nextLine();
+            GameConfigs.setAILevel(analyzer.split("=")[1]);
+            scanner.nextLine();
+            scanner.nextLine();
+            analyzer = scanner.nextLine();
+            GameConfigs.setTracer(Boolean.parseBoolean(analyzer.split("=")[1]));
+        }catch(FileNotFoundException e){
+            saveConfigs();
+        }
+    }
 }

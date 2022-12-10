@@ -43,7 +43,7 @@ public class ChessPiece
 
     @Nullable
     public static ChessPiece fromString(String s){
-        String[] parts = s.split("\\(,\\)");
+        String[] parts = s.split("[(,)]");
         try{
             return new ChessPiece(Side.byName(parts[0].trim()), Integer.parseInt(parts[1].trim()), Integer.parseInt(parts[1].trim()));
         }catch(IllegalArgumentException e){

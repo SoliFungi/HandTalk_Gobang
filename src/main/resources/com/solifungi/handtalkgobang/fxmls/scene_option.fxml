@@ -16,8 +16,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.VBox?>
-
 <?import javafx.scene.text.Text?>
+
 <BorderPane style="-fx-padding: 30px 30px 7px 30px" xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.solifungi.handtalkgobang.controllers.ConfigController">
     <background>
@@ -59,8 +59,8 @@
                     <ToggleGroup fx:id="fullscreen"/>
                 </fx:define>
                 <HBox spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="1">
-                    <RadioButton text="Fullscreen" toggleGroup="$fullscreen" onAction="#fullscreen"/>
-                    <RadioButton text="Window" toggleGroup="$fullscreen" onAction="#window"/>
+                    <RadioButton text="Fullscreen" toggleGroup="$fullscreen" onAction="#setScreen"/>
+                    <RadioButton text="Window" toggleGroup="$fullscreen" onAction="#setScreen"/>
                 </HBox>
 
                 <!--> 语言设置 <-->

@@ -2,6 +2,7 @@ package com.solifungi.handtalkgobang.util;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 
 public class Utilities {
     public static String getFormattedTime(){
@@ -23,6 +24,16 @@ public class Utilities {
                 sb.append(0);
             }
             sb.append(datum);
+        }
+    }
+
+    public static Locale localeFromString(String localeString){
+        String[] parts = localeString.split("_",-1);
+        switch(parts.length){
+            case 0: return null;
+            case 1: return new Locale(parts[0]);
+            case 2: return new Locale(parts[0], parts[1]);
+            default: return new Locale(parts[0], parts[1], parts[2].replaceFirst("#",""));
         }
     }
 }

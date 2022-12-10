@@ -7,7 +7,7 @@ import java.util.Locale;
 public class GameConfigs
 {
     /* General Configs */
-    public static boolean musicMuted = false;
+    public static boolean musicMuted = false; // Reset to false when game restarts.
     public static int musicVolume = 100;
     public static int effectVolume = 100;
     public static boolean isFullScreen = false;
