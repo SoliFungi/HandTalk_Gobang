@@ -3,6 +3,7 @@ package com.solifungi.handtalkgobang.game;
 import com.solifungi.handtalkgobang.util.handlers.EnumHandler.BoardType;
 import com.solifungi.handtalkgobang.util.handlers.EnumHandler.Side;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class GobangGame
@@ -15,6 +16,7 @@ public class GobangGame
     private int pieceCount = 0;
     private int[][] gameManual = new int[boardType.getSize()][boardType.getSize()];
     private ChessPiece lastPiece = null;
+    private File saveFile = null;
     public boolean sideLock = false;
 
     /* RunGame Methods */
@@ -182,5 +184,13 @@ public class GobangGame
 
     public ArrayList<ChessPiece> getPiecesList(){
         return piecesList;
+    }
+
+    public File getSaveFile(){
+        return saveFile;
+    }
+
+    public void setSaveFile(File file) {
+        this.saveFile = file;
     }
 }

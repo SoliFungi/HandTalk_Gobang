@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.CheckMenuItem?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.GameController"
+            fx:id="gamePane" minWidth="960" minHeight="720">
+    <fx:define>
+        <ToggleGroup fx:id="poe"/>
+        <ToggleGroup fx:id="takeTurn"/>
+    </fx:define>
+
+    <top>
+        <MenuBar fx:id="menuBar">
+            <Menu text="%menu.file">
+                <MenuItem text="%menu.file.new_game" onAction="#restartGame"/>
+                <MenuItem text="%menu.file.open" onAction="#loadGame"/>
+                <MenuItem text="%menu.file.save" onAction="#saveGame"/>
+                <MenuItem text="%menu.file.save_as" onAction="#saveGameAs"/>
+                <MenuItem text="%menu.file.game_info" onAction="#showGameInfo"/>
+            </Menu>
+            <Menu text="%menu.game">
+                <MenuItem text="%menu.game.switch_side"/>
+                <MenuItem text="%menu.game.forfeit"/>
+                <RadioMenuItem toggleGroup="$poe" text="%menu.game.pvp"/>
+                <RadioMenuItem toggleGroup="$poe" text="%menu.game.pve"/>
+            </Menu>
+            <Menu text="%menu.edit">
+                <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.in_turn"/>
+                <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.black_only"/>
+                <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.white_only"/>
+                <CheckMenuItem text="%menu.edit.piece_eraser"/>
+                <CheckMenuItem text="%menu.edit.branch_eraser"/>
+            </Menu>
+            <Menu text="%menu.scene">
+                <CheckMenuItem text="%menu.scene.fullscreen"/>
+                <CheckMenuItem text="%menu.scene.show_axis"/>
+                <CheckMenuItem text="%menu.scene.show_num"/>
+            </Menu>
+        </MenuBar>
+    </top>
+    <right>
+        <VBox>
+            <VBox alignment="TOP_CENTER" >
+                <Text text="Gobang Game" textAlignment="CENTER"/>
+            </VBox>
+            <Button text="%button.game_options" alignment="CENTER_RIGHT" onAction="#openInGameOptions"/>
+            <Button text="%button.save_game" alignment="CENTER_RIGHT" onAction="#saveAndQuit"/>
+        </VBox>
+    </right>
+    <center>
+        <Pane fx:id="boardPane"/>
+    </center>
+</BorderPane>

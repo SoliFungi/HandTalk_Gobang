@@ -9,6 +9,7 @@ import com.solifungi.handtalkgobang.util.Reference;
 import com.solifungi.handtalkgobang.util.Utilities;
 import com.solifungi.handtalkgobang.util.handlers.FileHandler;
 import com.solifungi.handtalkgobang.util.handlers.StageHandler;
+
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
@@ -23,6 +24,7 @@ import java.io.File;
 
 public class GameController implements IHandleStage
 {
+    /* StageHandler */
     public static double stageWidth, stageHeight;
 
     StageHandler handler;
@@ -32,21 +34,30 @@ public class GameController implements IHandleStage
         this.handler = handler;
     }
 
-    @FXML
-    public Pane boardPane = new Pane();
+    @FXML public Pane boardPane = new Pane();
+    @FXML public BorderPane gamePane; // The pane fills the whole game scene. (Assigned before method <initialize>)
+    @FXML public MenuBar menuBar;
 
-    @FXML
-    public BorderPane gamePane; // The pane fills the whole game scene. (Assigned before method <initialize>)
-
+    /* Init Methods */
     @FXML
     private void initialize(){
-        startNewGame();
-        ChessBoardPane chessBoard = HandTalkApp.currentChessboard;
+        initGame(new GobangGame());
+        menuBar.setPrefWidth(gamePane.getWidth());
+        gamePane.widthProperty().addListener(ob -> menuBar.setPrefWidth(gamePane.getWidth()));
+    }
+
+    public void initGame(GobangGame game){
+        HandTalkApp.currentGame = game;
+        stageWidth = gamePane.getMinWidth(); // fullscreen?
+        stageHeight = gamePane.getMinHeight();
+        ChessBoardPane chessBoard = new ChessBoardPane(HandTalkApp.currentGame);
+        HandTalkApp.currentChessboard = chessBoard;
+        boardPane.getChildren().clear();
+        boardPane.getChildren().add(chessBoard);
         chessBoard.setOnMouseClicked(event -> {
             double cl = chessBoard.getCellLength();
             int xPos = (int) (event.getX() / cl);
             int yPos = (int) (event.getY() / cl);
-            GobangGame game = HandTalkApp.currentGame;
             if(game.playRound(new int[]{xPos, yPos})){
                 chessBoard.renderNewPiece(game.getLastPiece());
                 if(game.getWinningSide() != -1){
@@ -57,16 +68,7 @@ public class GameController implements IHandleStage
         });
     }
 
-    public void startNewGame(){
-        HandTalkApp.currentGame = new GobangGame();
-        stageWidth = gamePane.getMinWidth();
-        stageHeight = gamePane.getMinHeight();
-        HandTalkApp.currentChessboard = new ChessBoardPane(HandTalkApp.currentGame);
-
-        boardPane.getChildren().clear();
-        boardPane.getChildren().add(HandTalkApp.currentChessboard);
-    }
-
+    /* Game Save Methods */
     public void endGame(GobangGame game){
         Dialog<String> endDialog = new Dialog<>();
         DialogPane dialogPane = endDialog.getDialogPane();
@@ -88,21 +90,12 @@ public class GameController implements IHandleStage
         Button btSave = (Button) dialogPane.lookupButton(save);
 
         // Add save-game fileChooser
-        btSave.setOnAction(event -> {
-            FileChooser fileSaver = new FileChooser();
-            configFileSaver(fileSaver);
-            File file = fileSaver.showSaveDialog(handler.getStage(Reference.GAME));
-            if(file != null && FileHandler.saveGame(game, file)){
-                Alert info = new Alert(Alert.AlertType.INFORMATION);
-                info.setHeaderText("Saved successfully!");
-                info.showAndWait();
-            }
-        });
-
+        btSave.setOnAction(event -> openGameSaver(game));
         endDialog.showAndWait();
     }
 
-    private static void configFileSaver(final FileChooser fileSaver){
+    private void openGameSaver(GobangGame game){
+        FileChooser fileSaver = new FileChooser();
         fileSaver.setTitle("Save Manual");
         fileSaver.setInitialDirectory(new File(System.getProperty("user.home")));
         fileSaver.setInitialFileName("untitled_game-" + Utilities.getFormattedTime());
@@ -110,19 +103,77 @@ public class GameController implements IHandleStage
         if(GameConfigs.isGameTraced()){
             fileSaver.getExtensionFilters().add(new FileChooser.ExtensionFilter("HTG Game Record","*.htg"));
         }
+
+        File file = fileSaver.showSaveDialog(handler.getStage(Reference.GAME));
+        if(file != null && FileHandler.saveGame(game, file)){
+            HandTalkApp.currentGame.setSaveFile(file);
+            Alert info = new Alert(Alert.AlertType.INFORMATION);
+            info.setHeaderText("Saved successfully!");
+            info.showAndWait();
+        }
+    }
+
+    private void openGameLoader(){
+        FileChooser fileSaver = new FileChooser();
+        fileSaver.setTitle("Open File");
+        fileSaver.setInitialDirectory(new File(System.getProperty("user.dir")));
+        fileSaver.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("TXT Doc","*.txt"),
+                new FileChooser.ExtensionFilter("HTG Game Record","*.htg")
+        );
+
+        File file = fileSaver.showSaveDialog(handler.getStage(Reference.GAME));
+        initGame(FileHandler.readGame(file));
+    }
+
+    /* FXML EventHandler Methods */
+    @FXML
+    protected void restartGame(){
+        if(HandTalkApp.currentGame.getSaveFile() == null){
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION,"Game not saved yet. Want to save this game?");
+            Button ok = (Button) alert.getDialogPane().lookupButton(ButtonType.OK);
+            ok.setOnAction(event -> openGameSaver(HandTalkApp.currentGame));
+            alert.showAndWait();
+        }
+        initGame(new GobangGame());
     }
 
     @FXML
-    protected void onGameSaved(){
-        //save code
+    protected void loadGame(){
+        openGameLoader();
+    }
+
+    @FXML
+    protected void saveGame(){
+        File file = HandTalkApp.currentGame.getSaveFile();
+        if(file != null && FileHandler.isSaveFileValid(file)){
+            FileHandler.saveGame(HandTalkApp.currentGame, file);
+        }
+        else{
+            saveGameAs();
+        }
+    }
+
+    @FXML
+    protected void saveGameAs(){
+        openGameSaver(HandTalkApp.currentGame);
+    }
+
+    @FXML
+    protected void showGameInfo(){
+        handler.loadStage(Reference.GAME_INFO, null, StageStyle.UTILITY);
+    }
+
+    @FXML
+    protected void saveAndQuit(){
+        saveGame();
         handler.unloadStage(Reference.GAME);
         handler.getStage(Reference.MAIN).show();
     }
 
     @FXML
     protected void openInGameOptions() {
-        //stop game(time count)
-        handler.loadStage(Reference.OPTION_IN, "Options", Reference.OPTION_CSS, StageStyle.UTILITY);
+        handler.loadStage(Reference.OPTION_IN, Reference.OPTION_CSS, StageStyle.UTILITY);
     }
 
 }

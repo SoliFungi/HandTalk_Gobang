@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.control.Label?>
+<?import javafx.geometry.Insets?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.MenuController"
+            prefWidth="480" prefHeight="360" style="-fx-background-color: #e5e7c8">
+    <padding>
+        <Insets topRightBottomLeft="20"/>
+    </padding>
+    <Label text="%"/>
+</AnchorPane>

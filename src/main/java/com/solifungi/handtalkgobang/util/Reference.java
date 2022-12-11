@@ -1,11 +1,16 @@
 package com.solifungi.handtalkgobang.util;
 
+import java.util.HashMap;
+
 public class Reference {
+    public static final String VERSION = "v1.0";
+
     /*FXML*/
-    public static final String MAIN = "fxmls/scene_main.fxml";
-    public static final String OPTION = "fxmls/scene_option.fxml";
-    public static final String OPTION_IN = "fxmls/scene_option_ingame.fxml";
-    public static final String GAME = "fxmls/scene_game.fxml";
+    public static final String MAIN = "fxmls/main.fxml";
+    public static final String OPTION = "fxmls/option.fxml";
+    public static final String OPTION_IN = "fxmls/option_ingame.fxml";
+    public static final String GAME = "fxmls/game.fxml";
+    public static final String GAME_INFO = "fxmls/game_info.fxml";
 
     /*CSS*/
     public static final String MENU_CSS = "css/MenuStyle.css";
@@ -23,4 +28,12 @@ public class Reference {
 
     /*Locale*/
     public static final String LANG_RESOURCE = "com/solifungi/handtalkgobang/languages/lang";
+    public static HashMap<String, String> stageTitleKeys = new HashMap<>();
+    public static void setTitleMap(){
+        stageTitleKeys.put(MAIN, "title.primary_stage");
+        stageTitleKeys.put(OPTION, "title.option");
+        stageTitleKeys.put(OPTION_IN, "title.option_ingame");
+        stageTitleKeys.put(GAME, "title.game");
+        stageTitleKeys.put(GAME_INFO, "title.game_info");
+    }
 }

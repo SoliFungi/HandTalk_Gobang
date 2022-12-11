@@ -55,7 +55,7 @@ public class StageHandler
                 System.out.println("CSS file load failure: " + Reference.MENU_CSS);
             }
             primaryStage.setScene(scene);
-            primaryStage.setTitle("HandTalk Gobang");
+            primaryStage.setTitle(getI18nTitleName(Reference.MAIN));
             primaryStage.getIcons().add(new Image(Reference.GAME_ICON));
             primaryStage.setResizable(false);
             primaryStage.show();
@@ -73,11 +73,10 @@ public class StageHandler
      * Load a new stage from FXML, and add it to stageMap.
      *
      * @param resourceName Corresponding FXML resource location
-     * @param title Displayed stage title
      * @param cssModifier CSS file which modifies the scene style
      * @param style The stage style
      */
-    public void loadStage(String resourceName, String title, @Nullable String cssModifier, StageStyle style){
+    public void loadStage(String resourceName, @Nullable String cssModifier, StageStyle style){
         try{
             FXMLLoader fxmlLoader = new FXMLLoader(
                     HandTalkApp.class.getResource(resourceName),
@@ -95,7 +94,7 @@ public class StageHandler
             }
             Stage stage = new Stage(style);
             stage.setScene(scene);
-            stage.setTitle(title);
+            stage.setTitle(getI18nTitleName(resourceName));
             stage.getIcons().add(new Image(Reference.GAME_ICON));
             stage.setResizable(false);
             addStage(resourceName, stage);
@@ -119,7 +118,6 @@ public class StageHandler
                     ResourceBundle.getBundle(Reference.LANG_RESOURCE, GameConfigs.currentLocale)
             );
             Scene scene = new Scene(fxmlLoader.load(), stage.getScene().getWidth(), stage.getScene().getHeight());
-            stage.setScene(scene);
             if(cssModifier != null){
                 URL css = HandTalkApp.class.getResource(cssModifier);
                 if(css != null){
@@ -129,6 +127,8 @@ public class StageHandler
                     System.out.println("CSS file load failure: " + cssModifier);
                 }
             }
+            stage.setScene(scene);
+            stage.setTitle(getI18nTitleName(resourceName));
             changeName(previousName, resourceName, stage);
 
             IHandleStage controller = fxmlLoader.getController();
@@ -154,7 +154,7 @@ public class StageHandler
             getStage(resourceName).close();
             stages.remove(resourceName);
         }catch(Exception e){
-            throw new NoSuchElementException("窗口不存在！");
+            throw new NoSuchElementException("The stage doesn't exist!");
         }
     }
 
@@ -171,14 +171,27 @@ public class StageHandler
                 value.getScene().setRoot(fxmlLoader.load());
                 IHandleStage controller = fxmlLoader.getController();
                 controller.setHandler(this);
+                value.setTitle(getI18nTitleName(key)); // Reset title
             }catch(IOException e){
                 throw new RuntimeException(e);
             }
         });
     }
 
+    private String getI18nTitleName(String resourceName){
+        StringBuilder sb = new StringBuilder(HandTalkApp.i18n.getString(Reference.stageTitleKeys.get(resourceName)));
+        if(resourceName.contains("primary")){
+            sb.append(Reference.VERSION);
+        }
+        if(resourceName.contains("game") && HandTalkApp.currentGame.getGameTitle() != null){
+            sb.append("-");
+            sb.append(HandTalkApp.currentGame.getGameTitle());
+        }
+        return sb.toString();
+    }
+
     /**
-     * List current stage names.
+     * List current stage resource names.
      *
      * @return String of all stage register names
      */

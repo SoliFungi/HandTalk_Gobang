@@ -1,5 +1,6 @@
 package com.solifungi.handtalkgobang.controllers;
 
+import com.solifungi.handtalkgobang.HandTalkApp;
 import com.solifungi.handtalkgobang.game.GameConfigs;
 import com.solifungi.handtalkgobang.util.IHandleStage;
 import com.solifungi.handtalkgobang.util.Reference;
@@ -13,6 +14,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.text.Text;
 
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class ConfigController implements IHandleStage
 {
@@ -64,6 +66,7 @@ public class ConfigController implements IHandleStage
                 case 1: GameConfigs.currentLocale = Locale.US; break;
                 default: GameConfigs.currentLocale = Locale.ENGLISH;
             }
+            HandTalkApp.i18n = ResourceBundle.getBundle(Reference.LANG_RESOURCE, GameConfigs.currentLocale);
             handler.refreshLocale();
         });
 

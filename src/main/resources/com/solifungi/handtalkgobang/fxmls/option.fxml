@@ -32,6 +32,13 @@
         </Background>
     </background>
 
+    <fx:define>
+        <ToggleGroup fx:id="fullscreen"/>
+        <ToggleGroup fx:id="boardSize"/>
+        <ToggleGroup fx:id="aiLevel"/>
+        <ToggleGroup fx:id="tracer"/>
+    </fx:define>
+
     <center>
         <HBox style="-fx-background-color: rgba(255,255,255,0.5); -fx-background-radius: 5%">
             <padding>
@@ -55,9 +62,6 @@
 
                 <!--> 是否全屏 <-->
                 <Label text="%text.fullscreen" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                <fx:define>
-                    <ToggleGroup fx:id="fullscreen"/>
-                </fx:define>
                 <HBox spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="1">
                     <RadioButton text="Fullscreen" toggleGroup="$fullscreen" onAction="#setScreen"/>
                     <RadioButton text="Window" toggleGroup="$fullscreen" onAction="#setScreen"/>
@@ -77,9 +81,6 @@
 
                 <!--> 棋盘大小 <-->
                 <Label text="%text.board_size" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                <fx:define>
-                    <ToggleGroup fx:id="boardSize"/>
-                </fx:define>
                 <HBox spacing="10" GridPane.rowIndex="4" GridPane.columnIndex="1">
                     <RadioButton text="19×19" toggleGroup="$boardSize" onAction="#setSize"/>
                     <RadioButton text="15×15" toggleGroup="$boardSize" onAction="#setSize"/>
@@ -88,9 +89,6 @@
 
                 <!--> AI难度 <-->
                 <Label text="%text.ai_level" GridPane.rowIndex="5" GridPane.columnIndex="0"/>
-                <fx:define>
-                    <ToggleGroup fx:id="aiLevel"/>
-                </fx:define>
                 <HBox fx:id="aiLvl" spacing="15" GridPane.rowIndex="5" GridPane.columnIndex="1">
                     <RadioButton text="EASY" toggleGroup="$aiLevel" onAction="#setLevel"/>
                     <RadioButton text="NORMAL" toggleGroup="$aiLevel" onAction="#setLevel"/>
@@ -100,9 +98,6 @@
 
                 <!--> 保存落子顺序 <-->
                 <Label text="%text.tracer" GridPane.rowIndex="6" GridPane.columnIndex="0"/>
-                <fx:define>
-                    <ToggleGroup fx:id="tracer"/>
-                </fx:define>
                 <HBox spacing="10" GridPane.rowIndex="6" GridPane.columnIndex="1">
                     <RadioButton text="Yes" toggleGroup="$tracer" onAction="#setTracer"/>
                     <RadioButton text="No" toggleGroup="$tracer" onAction="#setTracer"/>

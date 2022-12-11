@@ -1,16 +1,20 @@
 package com.solifungi.handtalkgobang.util.handlers;
 
+import com.solifungi.handtalkgobang.HandTalkApp;
 import com.solifungi.handtalkgobang.game.GameConfigs;
+import com.solifungi.handtalkgobang.util.Reference;
 import com.solifungi.handtalkgobang.util.Utilities;
 import com.solifungi.handtalkgobang.util.handlers.EnumHandler.Side;
 import com.solifungi.handtalkgobang.game.ChessPiece;
 import com.solifungi.handtalkgobang.game.GobangGame;
+import javafx.scene.control.Alert;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
+import java.util.ResourceBundle;
 import java.util.Scanner;
 
 public class FileHandler
@@ -32,14 +36,18 @@ public class FileHandler
         }
     }
 
+    public static boolean isSaveFileValid(File file){
+        return file.canWrite() && file.getName().matches(".*\\.(txt|htg)");
+    }
+
     public static GobangGame readGame(File file) {
         GobangGame game = new GobangGame();
+        game.setSaveFile(file);
         try{
             Scanner scanner = new Scanner(file);
             String analyzer;
-
-            // Read from .txt
-            if(file.toString().matches(".*\\.txt")){
+            /* Read from .txt */
+            if(file.getName().matches(".*\\.txt")){
                 GameConfigs.setTracer(false);
                 game.setGameTitle(scanner.nextLine().split(":")[1].trim());
                 scanner.nextLine(); // Omit save time
@@ -82,8 +90,7 @@ public class FileHandler
                     scanner.nextLine();
                 }
             }
-
-            // Read from .htg
+            /* Read from .htg */
             else{
                 GameConfigs.setTracer(true);
                 game.setGameTitle(scanner.nextLine());
@@ -106,7 +113,11 @@ public class FileHandler
             }
             return game;
         }catch(Exception e){
-            throw new RuntimeException("Error loading game from this save file.");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Fail to load game from file! New game started.");
+            alert.setContentText(e.toString());
+            alert.showAndWait();
+            return new GobangGame();
         }
     }
 
@@ -226,7 +237,6 @@ public class FileHandler
         }catch(IOException e){
             throw new RuntimeException("Config file cannot be found or created.");
         }
-
     }
 
     public static void loadConfig(){
@@ -249,6 +259,7 @@ public class FileHandler
             scanner.nextLine();
             analyzer = scanner.nextLine();
             GameConfigs.currentLocale = Utilities.localeFromString(analyzer.split("=")[1]);
+            HandTalkApp.i18n = ResourceBundle.getBundle(Reference.LANG_RESOURCE, GameConfigs.currentLocale);
             scanner.nextLine();
             scanner.nextLine();
             analyzer = scanner.nextLine();
@@ -265,4 +276,5 @@ public class FileHandler
             saveConfigs();
         }
     }
+
 }

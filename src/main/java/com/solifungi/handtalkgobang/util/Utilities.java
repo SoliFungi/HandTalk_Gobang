@@ -30,7 +30,7 @@ public class Utilities {
     public static Locale localeFromString(String localeString){
         String[] parts = localeString.split("_",-1);
         switch(parts.length){
-            case 0: return null;
+            case 0: return Locale.getDefault();
             case 1: return new Locale(parts[0]);
             case 2: return new Locale(parts[0], parts[1]);
             default: return new Locale(parts[0], parts[1], parts[2].replaceFirst("#",""));
