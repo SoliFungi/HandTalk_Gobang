@@ -2,17 +2,20 @@ package com.solifungi.handtalkgobang.controllers;
 
 import com.solifungi.handtalkgobang.HandTalkApp;
 import com.solifungi.handtalkgobang.game.ChessBoardPane;
+import com.solifungi.handtalkgobang.game.ChessPiece;
 import com.solifungi.handtalkgobang.game.GameConfigs;
 import com.solifungi.handtalkgobang.game.GobangGame;
 import com.solifungi.handtalkgobang.util.IHandleStage;
 import com.solifungi.handtalkgobang.util.Reference;
 import com.solifungi.handtalkgobang.util.Utilities;
+import com.solifungi.handtalkgobang.util.handlers.EnumHandler.Side;
 import com.solifungi.handtalkgobang.util.handlers.FileHandler;
 import com.solifungi.handtalkgobang.util.handlers.StageHandler;
-
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -24,9 +27,16 @@ import java.io.File;
 
 public class GameController implements IHandleStage
 {
-    /* StageHandler */
     public static double stageWidth, stageHeight;
+    public static boolean vsAI = false;
 
+    @FXML public Pane boardPane = new Pane();
+    @FXML public BorderPane gamePane; // The pane fills the whole game scene. (Assigned before method <initialize>)
+    @FXML MenuBar menuBar;
+    @FXML MenuItem switcher;
+    @FXML CheckMenuItem pieceEraser, branchEraser;
+
+    /* StageHandler */
     StageHandler handler;
 
     @Override
@@ -34,16 +44,27 @@ public class GameController implements IHandleStage
         this.handler = handler;
     }
 
-    @FXML public Pane boardPane = new Pane();
-    @FXML public BorderPane gamePane; // The pane fills the whole game scene. (Assigned before method <initialize>)
-    @FXML public MenuBar menuBar;
-
     /* Init Methods */
     @FXML
     private void initialize(){
         initGame(new GobangGame());
+
         menuBar.setPrefWidth(gamePane.getWidth());
         gamePane.widthProperty().addListener(ob -> menuBar.setPrefWidth(gamePane.getWidth()));
+        if(!vsAI){
+            switcher.setDisable(true);
+        }
+
+        if(GameConfigs.isGameTraced()){
+            pieceEraser.setDisable(true);
+            branchEraser.setDisable(false);
+        }
+        else{
+            branchEraser.setDisable(true);
+            pieceEraser.setDisable(false);
+        }
+        pieceEraser.selectedProperty().addListener((ob, oldValue, newValue) ->
+                HandTalkApp.currentChessboard.setOnMouseClicked(newValue ? new ChessDeleteHandler() : new ChessPlaceHandler()));
     }
 
     public void initGame(GobangGame game){
@@ -54,18 +75,7 @@ public class GameController implements IHandleStage
         HandTalkApp.currentChessboard = chessBoard;
         boardPane.getChildren().clear();
         boardPane.getChildren().add(chessBoard);
-        chessBoard.setOnMouseClicked(event -> {
-            double cl = chessBoard.getCellLength();
-            int xPos = (int) (event.getX() / cl);
-            int yPos = (int) (event.getY() / cl);
-            if(game.playRound(new int[]{xPos, yPos})){
-                chessBoard.renderNewPiece(game.getLastPiece());
-                if(game.getWinningSide() != -1){
-                    endGame(game);
-                    chessBoard.setOnMouseClicked(null);
-                }
-            }
-        });
+        chessBoard.setOnMouseClicked(new ChessPlaceHandler());
     }
 
     /* Game Save Methods */
@@ -165,6 +175,54 @@ public class GameController implements IHandleStage
     }
 
     @FXML
+    protected void switchSide(){
+        GobangGame game = HandTalkApp.currentGame;
+        String bn = game.blackName;
+        game.blackName = game.whiteName;
+        game.whiteName = bn;
+        game.setCurrentSide(Side.toOpposite(game.getCurrentSide()));
+        // ai compute
+    }
+
+    @FXML
+    protected void forfeit(){
+        GobangGame game = HandTalkApp.currentGame;
+        game.setWinningSide(Side.toOpposite(game.getCurrentSide()).getSign());
+        endGame(game);
+    }
+
+    @FXML
+    protected void setPVP(){
+        vsAI = false;
+        // stop ai engine
+    }
+
+    @FXML
+    protected void setPVE(){
+        vsAI = true;
+        // load ai engine
+    }
+
+    @FXML
+    protected void setInTurn(){
+        GobangGame game = HandTalkApp.currentGame;
+        game.sideLock = false;
+        game.setCurrentSide(Side.toOpposite(game.getCurrentSide()));
+    }
+
+    @FXML
+    protected void setBlackOnly(){
+        HandTalkApp.currentGame.setCurrentSide(Side.BLACK);
+        HandTalkApp.currentGame.sideLock = true;
+    }
+
+    @FXML
+    protected void setWhiteOnly(){
+        HandTalkApp.currentGame.setCurrentSide(Side.WHITE);
+        HandTalkApp.currentGame.sideLock = true;
+    }
+
+    @FXML
     protected void saveAndQuit(){
         saveGame();
         handler.unloadStage(Reference.GAME);
@@ -174,6 +232,72 @@ public class GameController implements IHandleStage
     @FXML
     protected void openInGameOptions() {
         handler.loadStage(Reference.OPTION_IN, Reference.OPTION_CSS, StageStyle.UTILITY);
+    }
+
+
+    class ChessPlaceHandler implements EventHandler<MouseEvent>{
+        GobangGame game = HandTalkApp.currentGame;
+        ChessBoardPane chessBoard = HandTalkApp.currentChessboard;
+
+        @Override
+        public void handle(MouseEvent event) {
+            double cl = chessBoard.getCellLength();
+            int xPos = (int) (event.getX() / cl);
+            int yPos = (int) (event.getY() / cl);
+            if(game.playRound(xPos, yPos)){
+                chessBoard.setOnMouseClicked(null);
+                final Runnable render = () -> {
+                    try{
+                        Thread.sleep(500);
+                    }catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
+                    chessBoard.setOnMouseClicked(this);
+                };
+                new Thread(render).start();
+
+                chessBoard.renderNewPiece(game.getLastPiece());
+                if(game.getWinningSide() != -1){
+                    endGame(game);
+                    chessBoard.setOnMouseClicked(null);
+                }
+            }
+        }
+    }
+
+    class ChessDeleteHandler implements EventHandler<MouseEvent>{
+        GobangGame game = HandTalkApp.currentGame;
+        ChessBoardPane chessBoard = HandTalkApp.currentChessboard;
+
+        @Override
+        public void handle(MouseEvent event) {
+            double cl = chessBoard.getCellLength();
+            int xPos = (int) (event.getX() / cl);
+            int yPos = (int) (event.getY() / cl);
+            try{
+                System.out.println(game.getGameManual()[xPos][yPos]);
+                ChessPiece toRemove = new ChessPiece(Side.bySign(game.getGameManual()[xPos][yPos]), xPos, yPos);
+
+//                chessBoard.setOnMouseClicked(null);
+//                final Runnable render = () -> {
+//                    try{
+//                        Thread.sleep(10);
+//                    }catch(InterruptedException e){
+//                        e.printStackTrace();
+//                    }
+//                    chessBoard.setOnMouseClicked(this);
+//                };
+//                new Thread(render).start();
+
+                game.getPiecesList().remove(toRemove);
+                game.setPieceCount(game.getPiecesList().size());
+                game.rewriteManualFromList();
+                chessBoard.delPieceOnCanvas(xPos, yPos);
+            }
+            catch(IllegalArgumentException e){
+                System.out.println("No piece at(" + xPos + "," + yPos + ")");
+            }
+        }
     }
 
 }

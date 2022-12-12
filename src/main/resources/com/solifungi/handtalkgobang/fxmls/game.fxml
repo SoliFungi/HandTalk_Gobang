@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.RadioMenuItem?>
-<?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.GameController"
             fx:id="gamePane" minWidth="960" minHeight="720">
     <fx:define>
@@ -28,17 +23,17 @@
                 <MenuItem text="%menu.file.game_info" onAction="#showGameInfo"/>
             </Menu>
             <Menu text="%menu.game">
-                <MenuItem text="%menu.game.switch_side"/>
-                <MenuItem text="%menu.game.forfeit"/>
-                <RadioMenuItem toggleGroup="$poe" text="%menu.game.pvp"/>
-                <RadioMenuItem toggleGroup="$poe" text="%menu.game.pve"/>
+                <MenuItem fx:id="switcher" text="%menu.game.switch_side" onAction="#switchSide"/>
+                <MenuItem text="%menu.game.forfeit" onAction="#forfeit"/>
+                <RadioMenuItem toggleGroup="$poe" text="%menu.game.pvp" onAction="#setPVP" selected="true"/>
+                <RadioMenuItem toggleGroup="$poe" text="%menu.game.pve" onAction="#setPVE"/>
             </Menu>
             <Menu text="%menu.edit">
-                <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.in_turn"/>
-                <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.black_only"/>
-                <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.white_only"/>
-                <CheckMenuItem text="%menu.edit.piece_eraser"/>
-                <CheckMenuItem text="%menu.edit.branch_eraser"/>
+                <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.in_turn" onAction="#setInTurn" selected="true"/>
+                <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.black_only" onAction="#setBlackOnly"/>
+                <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.white_only" onAction="#setWhiteOnly"/>
+                <CheckMenuItem fx:id="pieceEraser" text="%menu.edit.piece_eraser"/>
+                <CheckMenuItem fx:id="branchEraser" text="%menu.edit.branch_eraser"/>
             </Menu>
             <Menu text="%menu.scene">
                 <CheckMenuItem text="%menu.scene.fullscreen"/>

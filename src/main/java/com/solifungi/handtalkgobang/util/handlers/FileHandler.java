@@ -51,7 +51,9 @@ public class FileHandler
                 GameConfigs.setTracer(false);
                 game.setGameTitle(scanner.nextLine().split(":")[1].trim());
                 scanner.nextLine(); // Omit save time
-                scanner.nextLine(); // Unfinished for opponents
+                analyzer = scanner.nextLine();
+                game.blackName = analyzer.split("-")[1];
+                game.whiteName = analyzer.split("-")[3];
                 scanner.nextLine(); // Unfinished for rules
                 game.setBoardType(Integer.parseInt(scanner.nextLine().split("×")[1].trim()));
 
@@ -94,7 +96,9 @@ public class FileHandler
             else{
                 GameConfigs.setTracer(true);
                 game.setGameTitle(scanner.nextLine());
-                scanner.nextLine(); // Unfinished for opponents
+                analyzer = scanner.nextLine();
+                game.blackName = analyzer.split("-")[0];
+                game.whiteName = analyzer.split("-")[1];
                 scanner.nextLine(); // Unfinished for rules
                 game.setBoardType(Integer.parseInt(scanner.nextLine()));
                 game.setWinningSide(Integer.parseInt(scanner.nextLine()));
@@ -135,9 +139,9 @@ public class FileHandler
         try(PrintWriter writer = new PrintWriter(file)){
             writer.println("GameTitle: " + game.getGameTitle());
             writer.println("SaveTime: " + date.toGMTString());
-            writer.println("Opponents: "); // unfinished
+            writer.println("Opponents: B-" + game.blackName + "-W-" + game.whiteName);
             writer.println("Rules: "); // unfinished
-            writer.println("BoardSize: " + boardSize + "×" + boardSize);
+            writer.println("BoardSize: " + game.getBoardType().toString());
             writer.println(lastPieceDesc(game));
             writer.println(resultDesc(game));
             writer.println();
@@ -188,7 +192,7 @@ public class FileHandler
         if(!GameConfigs.isGameTraced() || !file.toString().matches(".*\\.htg")) return false; // Double check
         try(PrintWriter writer = new PrintWriter(file)){
             writer.println(game.getGameTitle());
-            writer.println(); // unfinished - opponents
+            writer.print(game.blackName); writer.print("-"); writer.println(game.whiteName);
             writer.println(); // unfinished - rules
             writer.println(game.getBoardType().getSize());
             writer.println(game.getWinningSide());

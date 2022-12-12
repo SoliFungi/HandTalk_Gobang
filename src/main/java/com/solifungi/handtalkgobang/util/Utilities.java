@@ -1,8 +1,11 @@
 package com.solifungi.handtalkgobang.util;
 
+import javafx.application.Platform;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.concurrent.CountDownLatch;
 
 public class Utilities {
     public static String getFormattedTime(){
@@ -36,4 +39,5 @@ public class Utilities {
             default: return new Locale(parts[0], parts[1], parts[2].replaceFirst("#",""));
         }
     }
+
 }

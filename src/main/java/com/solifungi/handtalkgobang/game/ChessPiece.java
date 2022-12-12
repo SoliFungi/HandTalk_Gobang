@@ -8,12 +8,6 @@ public class ChessPiece
     private final int posX,posY;
     private final Side side;
 
-    public ChessPiece(Side side, int[] pos){
-        this.side = side;
-        this.posX = pos[0];
-        this.posY = pos[1];
-    }
-
     public ChessPiece(Side side, int x, int y){
         this.side = side;
         this.posX = x;
@@ -34,6 +28,11 @@ public class ChessPiece
 
     public Side getSide(){
         return this.side;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        return (obj instanceof ChessPiece) && this.toString().equals(obj.toString());
     }
 
     @Override

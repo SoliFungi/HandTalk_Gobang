@@ -25,7 +25,7 @@
 
     <center>
         <VBox alignment="CENTER" spacing="20.0" >
-            <Text id="gameTitleText" styleClass="title" text="%text.game_title" textAlignment="CENTER"/>
+            <Text id="gameTitleText" styleClass="title" text="%text.game_name" textAlignment="CENTER"/>
             <Button text="%button.start_game" alignment="CENTER" onAction="#onGameStarted"/>
             <Button text="%button.main_options" alignment="CENTER" onAction="#mainMenuToOptions"/>
             <Button text="%button.quit_game" alignment="CENTER" onAction="#quitGame"/>

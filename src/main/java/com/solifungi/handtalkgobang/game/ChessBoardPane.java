@@ -2,6 +2,7 @@ package com.solifungi.handtalkgobang.game;
 
 import com.solifungi.handtalkgobang.HandTalkApp;
 import com.solifungi.handtalkgobang.controllers.GameController;
+import com.solifungi.handtalkgobang.util.Debugging;
 import com.solifungi.handtalkgobang.util.Reference;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -146,6 +147,15 @@ public class ChessBoardPane extends StackPane
         renderTriangle(newPiece);
     }
 
+    public void delPieceOnCanvas(int xPos, int yPos){
+        GraphicsContext gc = ((Canvas)this.getChildren().get(2)).getGraphicsContext2D();
+        gc.clearRect(cellLength * xPos, cellLength * yPos, cellLength, cellLength);
+        // Delete triangle
+        if(this.getChildren().get(3) != null){
+            this.getChildren().remove(3);
+        }
+    }
+
     /**
      * Add a red triangle sign on the last piece placed on the board.
      *
@@ -180,5 +190,10 @@ public class ChessBoardPane extends StackPane
 
     public double getCellLength(){
         return this.cellLength;
+    }
+
+    @Debugging
+    private void printChildrenClass(){
+        this.getChildren().forEach(node -> System.out.println(node.getClass()));
     }
 }

@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.control.Label?>
 <?import javafx.geometry.Insets?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.MenuController"
-            prefWidth="480" prefHeight="360" style="-fx-background-color: #e5e7c8">
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox spacing="130" xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.InfoController"
+            prefWidth="480" prefHeight="360" style="-fx-background-color: #e5e7c8" alignment="TOP_CENTER">
     <padding>
         <Insets topRightBottomLeft="20"/>
     </padding>
-    <Label text="%"/>
-</AnchorPane>
+    <GridPane alignment="TOP_CENTER" hgap="20" vgap="10">
+        <Label text="%text.game_title" style="-fx-font-size: 14pt; -fx-font-weight: bold" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <Label fx:id="gameName" style="-fx-font-size: 12pt" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <Label text="%text.opponents" style="-fx-font-size: 14pt; -fx-font-weight: bold" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+        <Label fx:id="opponents" style="-fx-font-size: 12pt" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+        <Label text="%text.game_rule" style="-fx-font-size: 14pt; -fx-font-weight: bold" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+        <Label fx:id="gameRule" style="-fx-font-size: 12pt" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+        <Label text="%text.board_size" style="-fx-font-size: 14pt; -fx-font-weight: bold" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+        <Label fx:id="boardSize" style="-fx-font-size: 12pt" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+        <Label text="%text.result" style="-fx-font-size: 14pt; -fx-font-weight: bold" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
+        <Label fx:id="result" style="-fx-font-size: 12pt" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
+    </GridPane>
+    <HBox alignment="BOTTOM_RIGHT" spacing="10">
+        <Button text="%button.ok" onAction="#exit"/>
+        <Button text="%button.to_clipboard" onAction="#copyToClipboard"/>
+    </HBox>
+</VBox>

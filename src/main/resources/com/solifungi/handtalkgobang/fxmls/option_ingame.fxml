@@ -3,14 +3,10 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.VBox?>
 
-<?import javafx.scene.control.Button?>
-
 <VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: #8fd5c8" minWidth="480" minHeight="360"
-      xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.MenuController">
+      xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.ConfigController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
-    <Button text="save" alignment="CENTER" layoutX="-100" onAction="#saveAndCloseInGameOptions"/>
-    <Button text="quit" alignment="CENTER" layoutX="100" onAction="#closeInGameOptions"/>
 </VBox>

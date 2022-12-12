@@ -8,6 +8,7 @@ import com.solifungi.handtalkgobang.util.handlers.StageHandler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuItem;
 import javafx.stage.StageStyle;
 
 public class MenuController implements IHandleStage
@@ -27,6 +28,9 @@ public class MenuController implements IHandleStage
         }
     }
 
+    @FXML Button mute, play;
+
+    /* FXML EventHandler Methods */
     @FXML
     protected void quitGame() {
         Platform.exit();
@@ -42,20 +46,6 @@ public class MenuController implements IHandleStage
         handler.loadStage(Reference.GAME, Reference.GAME_CSS, StageStyle.DECORATED);
         handler.changeStage(Reference.MAIN, Reference.GAME);
     }
-
-    @FXML
-    protected void saveAndCloseInGameOptions(){
-        //save code
-
-        handler.unloadStage(Reference.OPTION_IN);
-    }
-
-    @FXML
-    protected void closeInGameOptions(){
-        handler.unloadStage(Reference.OPTION_IN);
-    }
-
-    @FXML Button mute, play;
 
     @FXML
     protected void mute(){

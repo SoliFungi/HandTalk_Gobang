@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class GobangGame
 {
     private String gameTitle = "untitled";
+    public String blackName = "unknown", whiteName = "unknown";
     private BoardType boardType = GameConfigs.currentType;
     private Side currentSide = Side.BLACK;
     private int winningSide = -1; // -1:underway 0:draw 1:black 2:white
@@ -20,12 +21,12 @@ public class GobangGame
     public boolean sideLock = false;
 
     /* RunGame Methods */
-    public boolean playRound(int[] pos){
-        if(gameManual[pos[0]][pos[1]] == 0){
-            gameManual[pos[0]][pos[1]] = currentSide.getSign();
-            lastPiece = new ChessPiece(currentSide, pos);
+    public boolean playRound(int xPos, int yPos){
+        if(gameManual[xPos][yPos] == 0){
+            gameManual[xPos][yPos] = currentSide.getSign();
+            lastPiece = new ChessPiece(currentSide, xPos, yPos);
             pieceCount += 1;
-            if(GameConfigs.tracer) piecesList.add(lastPiece);
+            piecesList.add(lastPiece);
             if(!sideLock) changeSide();
             if(isWinning()){
                 setWinningSide(lastPiece.getSide().getSign());
@@ -125,6 +126,11 @@ public class GobangGame
             y -= 1;
         }
         return count == 5;
+    }
+
+    public void rewriteManualFromList(){
+        gameManual = new int[boardType.getSize()][boardType.getSize()];
+        piecesList.forEach(piece -> gameManual[piece.getX()][piece.getY()] = piece.getSide().getSign());
     }
 
 

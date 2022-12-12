@@ -65,7 +65,7 @@ public class StageHandler
             IHandleStage controller = fxmlLoader.getController();
             controller.setHandler(this);
         }catch(IOException e){
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
@@ -103,7 +103,7 @@ public class StageHandler
             IHandleStage controller = fxmlLoader.getController();
             controller.setHandler(this);
         }catch(Exception e){
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
@@ -134,7 +134,7 @@ public class StageHandler
             IHandleStage controller = fxmlLoader.getController();
             controller.setHandler(this);
         }catch(Exception e){
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 

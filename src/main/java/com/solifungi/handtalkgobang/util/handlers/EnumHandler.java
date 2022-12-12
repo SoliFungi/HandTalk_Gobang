@@ -82,7 +82,7 @@ public class EnumHandler {
 
         @Override
         public String toString(){
-            return "type: " + this.size + " * " + this.size;
+            return this.size + "×" + this.size;
         }
 
         public static BoardType bySize(int size){
