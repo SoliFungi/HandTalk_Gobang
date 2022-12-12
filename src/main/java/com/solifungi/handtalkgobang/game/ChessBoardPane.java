@@ -26,7 +26,7 @@ public class ChessBoardPane extends StackPane
     private static Image blackImage;
     private static Image whiteImage;
 
-    static GraphicsContext gc;
+    private static GraphicsContext gc;
 
     private static Canvas side_canvas;
 
@@ -124,17 +124,18 @@ public class ChessBoardPane extends StackPane
         GraphicsContext gc = side_canvas.getGraphicsContext2D();
 //        Image blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
 //        Image whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength,true,true);
-        for(int i = 0; i < boardSize; i++){
-            for(int j = 0; j < boardSize; j++){
-                if(gameManual[i][j] == 1){
-                    gc.drawImage(blackImage, cellLength * i, cellLength * j);
-                }
-                else if(gameManual[i][j] == 2){
-                    gc.drawImage(whiteImage, cellLength * i, cellLength * j);
-
-                }
-            }
-        }
+        //sfd local
+//        for(int i = 0; i < boardSize; i++){
+//            for(int j = 0; j < boardSize; j++){
+//                if(gameManual[i][j] == 1){
+//                    gc.drawImage(blackImage, cellLength * i, cellLength * j);
+//                }
+//                else if(gameManual[i][j] == 2){
+//                    gc.drawImage(whiteImage, cellLength * i, cellLength * j);
+//
+//                }
+//            }
+//        }
         try{
             this.getChildren().set(2, side_canvas); // Rerender
         }catch(IndexOutOfBoundsException e){
@@ -159,19 +160,17 @@ public class ChessBoardPane extends StackPane
             //Image whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength,true,true);
             gc.drawImage(whiteImage, cellLength * newPiece.getX(), cellLength * newPiece.getY());
         }
-        renderTriangle(newPiece);
+        //renderTriangle(newPiece);
     }
 
     public void delPieceOnCanvas(int xPos, int yPos){
 //        GraphicsContext gc = ((Canvas)this.getChildren().get(2)).getGraphicsContext2D();
-        //gc.clearRect(cellLength * xPos, cellLength * yPos, cellLength, cellLength);
-
-        gc.drawImage(whiteImage, cellLength * xPos,cellLength*yPos);
+        gc.clearRect(cellLength * xPos, cellLength * yPos, cellLength, cellLength);
         // Delete triangle
         if(this.getChildren().get(2) != null){
             this.getChildren().remove(2);
         }
-        renderTriangle(new ChessPiece(EnumHandler.Side.WHITE,xPos,yPos));
+//        renderTriangle(new ChessPiece(EnumHandler.Side.WHITE,xPos,yPos));
     }
 
     /**
