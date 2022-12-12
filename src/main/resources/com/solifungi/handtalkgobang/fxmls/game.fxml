@@ -32,13 +32,13 @@
                 <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.in_turn" onAction="#setInTurn" selected="true"/>
                 <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.black_only" onAction="#setBlackOnly"/>
                 <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.white_only" onAction="#setWhiteOnly"/>
-                <CheckMenuItem fx:id="pieceEraser" text="%menu.edit.piece_eraser"/>
-                <CheckMenuItem fx:id="branchEraser" text="%menu.edit.branch_eraser"/>
+                <CheckMenuItem fx:id="pieceEraser" text="%menu.edit.piece_eraser" onAction="#pieceEraseMode"/>
+                <CheckMenuItem fx:id="branchEraser" text="%menu.edit.branch_eraser" onAction="#branchEraseMode"/>
             </Menu>
             <Menu text="%menu.scene">
-                <CheckMenuItem text="%menu.scene.fullscreen"/>
-                <CheckMenuItem text="%menu.scene.show_axis"/>
-                <CheckMenuItem text="%menu.scene.show_num"/>
+                <CheckMenuItem fx:id="screenMode" text="%menu.scene.fullscreen" onAction="#setScreenMode"/>
+                <CheckMenuItem fx:id="showAxis" text="%menu.scene.show_axis" onAction="#setAxisVisibility"/>
+                <CheckMenuItem fx:id="showPieceNum" text="%menu.scene.show_num" onAction="#setPieceNumShown"/>
             </Menu>
         </MenuBar>
     </top>

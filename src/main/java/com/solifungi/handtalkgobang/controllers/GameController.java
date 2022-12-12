@@ -10,6 +10,7 @@ import com.solifungi.handtalkgobang.util.Reference;
 import com.solifungi.handtalkgobang.util.Utilities;
 import com.solifungi.handtalkgobang.util.handlers.EnumHandler.Side;
 import com.solifungi.handtalkgobang.util.handlers.FileHandler;
+import com.solifungi.handtalkgobang.util.handlers.SoundHandler;
 import com.solifungi.handtalkgobang.util.handlers.StageHandler;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -25,17 +26,18 @@ import javafx.stage.StageStyle;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class GameController implements IHandleStage
 {
     public static double stageWidth, stageHeight;
     public static boolean vsAI = false;
 
-    @FXML public Pane boardPane = new Pane();
-    @FXML public BorderPane gamePane; // The pane fills the whole game scene. (Assigned before method <initialize>)
+    @FXML Pane boardPane = new Pane();
+    @FXML BorderPane gamePane; // The pane fills the whole game scene. (Assigned before method <initialize>)
     @FXML MenuBar menuBar;
     @FXML MenuItem switcher;
-    @FXML CheckMenuItem pieceEraser, branchEraser;
+    @FXML CheckMenuItem pieceEraser, branchEraser, screenMode, showAxis, showPieceNum;
 
     /* StageHandler */
     StageHandler handler;
@@ -125,15 +127,16 @@ public class GameController implements IHandleStage
     }
 
     private void openGameLoader(){
-        FileChooser fileSaver = new FileChooser();
-        fileSaver.setTitle("Open File");
-        fileSaver.setInitialDirectory(new File(System.getProperty("user.dir")));
-        fileSaver.getExtensionFilters().addAll(
+        FileChooser fileLoader = new FileChooser();
+        fileLoader.setTitle("Open File");
+        fileLoader.setInitialDirectory(new File(System.getProperty("user.dir")));
+        fileLoader.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("All Save File","*.*"),
                 new FileChooser.ExtensionFilter("TXT Doc","*.txt"),
                 new FileChooser.ExtensionFilter("HTG Game Record","*.htg")
         );
 
-        File file = fileSaver.showSaveDialog(handler.getStage(Reference.GAME));
+        File file = fileLoader.showOpenDialog(handler.getStage(Reference.GAME));
         initGame(FileHandler.readGame(file));
     }
 
@@ -224,6 +227,32 @@ public class GameController implements IHandleStage
     }
 
     @FXML
+    protected void pieceEraseMode(){
+        HandTalkApp.currentChessboard.setOnMouseClicked(pieceEraser.isSelected() ? new ChessDeleteHandler() : new ChessPlaceHandler());
+    }
+
+    @FXML
+    protected void branchEraseMode(){
+        HandTalkApp.currentChessboard.setOnMouseClicked(branchEraser.isSelected() ? new BranchDeleteHandler() : new ChessPlaceHandler());
+    }
+
+    @FXML
+    protected void setScreenMode(){
+        GameConfigs.isFullScreen = screenMode.isSelected();
+        handler.getStage(Reference.GAME).setFullScreen(screenMode.isSelected());
+    }
+
+    @FXML
+    protected void setAxisVisibility(){
+        HandTalkApp.currentChessboard.getAxis().setVisible(showAxis.isSelected());
+    }
+
+    @FXML
+    protected void setPieceNumShown(){
+        HandTalkApp.currentChessboard.showPieceNum(showPieceNum.isSelected());
+    }
+
+    @FXML
     protected void saveAndQuit(){
         saveGame();
         handler.unloadStage(Reference.GAME);
@@ -247,7 +276,7 @@ public class GameController implements IHandleStage
             int yPos = (int) (event.getY() / cl);
             if(game.playRound(xPos, yPos)){
                 chessBoard.setOnMouseClicked(null);
-                final Runnable render = () -> {
+                final Runnable acceptInput = () -> {
                     try{
                         Thread.sleep(0);
                     }catch(InterruptedException e){
@@ -255,10 +284,11 @@ public class GameController implements IHandleStage
                     }
                     chessBoard.setOnMouseClicked(this);
                 };
-                new Thread(render).start();
+                new Thread(acceptInput).start();
 
+                SoundHandler.audio.play();
                 chessBoard.renderNewPiece(game.getLastPiece());
-                if( game.getWinningSide() != -1){
+                if(game.getWinningSide() != -1){
                     endGame(game);
                     chessBoard.setOnMouseClicked(null);
                 }
@@ -266,7 +296,7 @@ public class GameController implements IHandleStage
         }
     }
 
-    class ChessDeleteHandler implements EventHandler<MouseEvent>{
+    static class ChessDeleteHandler implements EventHandler<MouseEvent>{
         GobangGame game = HandTalkApp.currentGame;
         ChessBoardPane chessBoard = HandTalkApp.currentChessboard;
 
@@ -279,21 +309,62 @@ public class GameController implements IHandleStage
                 System.out.println(game.getGameManual()[xPos][yPos]);
                 ChessPiece toRemove = new ChessPiece(Side.bySign(game.getGameManual()[xPos][yPos]), xPos, yPos);
 
-//                chessBoard.setOnMouseClicked(null);
-//                final Runnable render = () -> {
-//                    try{
-//                        Thread.sleep(10);
-//                    }catch(InterruptedException e){
-//                        e.printStackTrace();
-//                    }
-//                    chessBoard.setOnMouseClicked(this);
-//                };
-//                new Thread(render).start();
+                chessBoard.setOnMouseClicked(null);
+                final Runnable acceptInput = () -> {
+                    try{
+                        Thread.sleep(0);
+                    }catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
+                    chessBoard.setOnMouseClicked(this);
+                };
+                new Thread(acceptInput).start();
 
                 game.getPiecesList().remove(toRemove);
                 game.setPieceCount(game.getPiecesList().size());
                 game.rewriteManualFromList();
                 chessBoard.delPieceOnCanvas(xPos, yPos);
+            }
+            catch(IllegalArgumentException e){
+                System.out.println("No piece at(" + xPos + "," + yPos + ")");
+            }
+        }
+    }
+
+    static class BranchDeleteHandler implements EventHandler<MouseEvent>{
+        GobangGame game = HandTalkApp.currentGame;
+        ChessBoardPane chessBoard = HandTalkApp.currentChessboard;
+
+        @Override
+        public void handle(MouseEvent event) {
+            double cl = chessBoard.getCellLength();
+            int xPos = (int) (event.getX() / cl);
+            int yPos = (int) (event.getY() / cl);
+            try{
+                System.out.println(game.getGameManual()[xPos][yPos]);
+                ChessPiece startPiece = new ChessPiece(Side.bySign(game.getGameManual()[xPos][yPos]), xPos, yPos);
+
+                chessBoard.setOnMouseClicked(null);
+                final Runnable acceptInput = () -> {
+                    try{
+                        Thread.sleep(0);
+                    }catch(InterruptedException e){
+                        e.printStackTrace();
+                    }
+                    chessBoard.setOnMouseClicked(this);
+                };
+                new Thread(acceptInput).start();
+
+                ArrayList<ChessPiece> list = game.getPiecesList();
+                ArrayList<ChessPiece> delList = new ArrayList<>();
+                int i = list.indexOf(startPiece);
+                for(int j = i; j < list.size(); j++){
+                    chessBoard.delPieceOnCanvas(list.get(j).getX(), list.get(j).getY());
+                    delList.add(list.get(j));
+                }
+                list.removeAll(delList);
+                game.setPieceCount(game.getPiecesList().size());
+                game.rewriteManualFromList();
             }
             catch(IllegalArgumentException e){
                 System.out.println("No piece at(" + xPos + "," + yPos + ")");

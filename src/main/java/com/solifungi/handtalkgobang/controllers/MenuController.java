@@ -9,6 +9,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.StageStyle;
 
 public class MenuController implements IHandleStage
@@ -45,6 +46,11 @@ public class MenuController implements IHandleStage
     protected void onGameStarted() {
         handler.loadStage(Reference.GAME, Reference.GAME_CSS, StageStyle.DECORATED);
         handler.changeStage(Reference.MAIN, Reference.GAME);
+        handler.getStage(Reference.GAME).setFullScreenExitHint("");
+        handler.getStage(Reference.GAME).setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+        if(GameConfigs.isFullScreen){
+            handler.getStage(Reference.GAME).setFullScreen(true);
+        }
     }
 
     @FXML

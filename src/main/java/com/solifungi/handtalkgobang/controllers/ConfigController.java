@@ -96,7 +96,7 @@ public class ConfigController implements IHandleStage
         if(boardSize.getToggles().get(0).isSelected()){
             GameConfigs.setBoardType(19);
         }
-        else if(boardSize.getToggles().get(0).isSelected()){
+        else if(boardSize.getToggles().get(1).isSelected()){
             GameConfigs.setBoardType(15);
         }
         else{
