@@ -4,6 +4,7 @@ import com.solifungi.handtalkgobang.HandTalkApp;
 import com.solifungi.handtalkgobang.controllers.GameController;
 import com.solifungi.handtalkgobang.util.Debugging;
 import com.solifungi.handtalkgobang.util.Reference;
+import com.solifungi.handtalkgobang.util.handlers.EnumHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -22,16 +23,21 @@ public class ChessBoardPane extends StackPane
     private final double boardLength;
     private final double cellLength;
     private final int[][] gameManual;
-    private final Image blackImage;
-    private final Image whiteImage;
+    private static Image blackImage;
+    private static Image whiteImage;
+
+    static GraphicsContext gc;
+
+    private static Canvas side_canvas;
 
     public ChessBoardPane(GobangGame game){
         this.boardSize = game.getBoardType().getSize();
         this.boardLength = GameController.stageHeight * 0.85;
         this.cellLength = boardLength / (boardSize - 1);
         this.gameManual = game.getGameManual();
-        this.blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
-        this.whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength, true, true);
+        blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
+        whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength, true, true);
+
 
 
         //this.getParent()
@@ -111,10 +117,13 @@ public class ChessBoardPane extends StackPane
      * This can cause lagging, consider using {@link #renderNewPiece} first.
      */
     private void renderPieces(){
-        Canvas canvas = new Canvas(boardLength + cellLength, boardLength + cellLength);
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        Image blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
-        Image whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength,true,true);
+        if (side_canvas==null){
+            side_canvas = new Canvas(boardLength + cellLength, boardLength + cellLength);
+        }
+//        Canvas canvas = new Canvas(boardLength + cellLength, boardLength + cellLength);
+        GraphicsContext gc = side_canvas.getGraphicsContext2D();
+//        Image blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
+//        Image whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength,true,true);
         for(int i = 0; i < boardSize; i++){
             for(int j = 0; j < boardSize; j++){
                 if(gameManual[i][j] == 1){
@@ -127,9 +136,9 @@ public class ChessBoardPane extends StackPane
             }
         }
         try{
-            this.getChildren().set(2, canvas); // Rerender
+            this.getChildren().set(2, side_canvas); // Rerender
         }catch(IndexOutOfBoundsException e){
-            this.getChildren().add(canvas); // Initial render
+            this.getChildren().add(side_canvas); // Initial render
         }
         renderTriangle(HandTalkApp.currentGame.getLastPiece());
     }
@@ -140,10 +149,7 @@ public class ChessBoardPane extends StackPane
      * @param newPiece The new piece to render (=lastPiece)
      */
     public void renderNewPiece(ChessPiece newPiece){
-        long stime = System.nanoTime();
-        GraphicsContext gc = ((Canvas)this.getChildren().get(2)).getGraphicsContext2D();
-        long endtime = System.nanoTime()-stime;
-        System.err.println(endtime);
+        gc = ((Canvas)this.getChildren().get(2)).getGraphicsContext2D();
         if(newPiece.getSide().getSign() == 1){
             //Image blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
             gc.drawImage(blackImage, cellLength * newPiece.getX(), cellLength * newPiece.getY());
@@ -157,12 +163,15 @@ public class ChessBoardPane extends StackPane
     }
 
     public void delPieceOnCanvas(int xPos, int yPos){
-        GraphicsContext gc = ((Canvas)this.getChildren().get(2)).getGraphicsContext2D();
-        gc.clearRect(cellLength * xPos, cellLength * yPos, cellLength, cellLength);
+//        GraphicsContext gc = ((Canvas)this.getChildren().get(2)).getGraphicsContext2D();
+        //gc.clearRect(cellLength * xPos, cellLength * yPos, cellLength, cellLength);
+
+        gc.drawImage(whiteImage, cellLength * xPos,cellLength*yPos);
         // Delete triangle
-        if(this.getChildren().get(3) != null){
-            this.getChildren().remove(3);
+        if(this.getChildren().get(2) != null){
+            this.getChildren().remove(2);
         }
+        renderTriangle(new ChessPiece(EnumHandler.Side.WHITE,xPos,yPos));
     }
 
     /**
