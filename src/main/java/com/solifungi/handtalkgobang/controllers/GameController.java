@@ -22,6 +22,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.StageStyle;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 
@@ -79,7 +80,7 @@ public class GameController implements IHandleStage
     }
 
     /* Game Save Methods */
-    public void endGame(GobangGame game){
+    public void endGame(@NotNull GobangGame game){
         Dialog<String> endDialog = new Dialog<>();
         DialogPane dialogPane = endDialog.getDialogPane();
         dialogPane.setBackground(new Background(new BackgroundFill(Color.SANDYBROWN,null,null)));
@@ -257,7 +258,7 @@ public class GameController implements IHandleStage
                 new Thread(render).start();
 
                 chessBoard.renderNewPiece(game.getLastPiece());
-                if(game.getWinningSide() != -1){
+                if( game.getWinningSide() != -1){
                     endGame(game);
                     chessBoard.setOnMouseClicked(null);
                 }

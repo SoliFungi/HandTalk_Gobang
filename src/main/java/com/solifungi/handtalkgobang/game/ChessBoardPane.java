@@ -22,12 +22,17 @@ public class ChessBoardPane extends StackPane
     private final double boardLength;
     private final double cellLength;
     private final int[][] gameManual;
+    private final Image blackImage;
+    private final Image whiteImage;
 
     public ChessBoardPane(GobangGame game){
         this.boardSize = game.getBoardType().getSize();
         this.boardLength = GameController.stageHeight * 0.85;
         this.cellLength = boardLength / (boardSize - 1);
         this.gameManual = game.getGameManual();
+        this.blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
+        this.whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength, true, true);
+
 
         //this.getParent()
 
@@ -135,13 +140,17 @@ public class ChessBoardPane extends StackPane
      * @param newPiece The new piece to render (=lastPiece)
      */
     public void renderNewPiece(ChessPiece newPiece){
+        long stime = System.nanoTime();
         GraphicsContext gc = ((Canvas)this.getChildren().get(2)).getGraphicsContext2D();
+        long endtime = System.nanoTime()-stime;
+        System.err.println(endtime);
         if(newPiece.getSide().getSign() == 1){
-            Image blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
+            //Image blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
             gc.drawImage(blackImage, cellLength * newPiece.getX(), cellLength * newPiece.getY());
+
         }
         else{
-            Image whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength,true,true);
+            //Image whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength,true,true);
             gc.drawImage(whiteImage, cellLength * newPiece.getX(), cellLength * newPiece.getY());
         }
         renderTriangle(newPiece);

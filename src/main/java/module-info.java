@@ -3,6 +3,7 @@ module com.solifungi.handtalkgobang {
     requires javafx.fxml;
     requires javafx.media;
     requires org.jetbrains.annotations;
+    requires fastjson;
 
 
     opens com.solifungi.handtalkgobang to javafx.fxml;
