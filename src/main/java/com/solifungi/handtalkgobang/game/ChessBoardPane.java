@@ -4,8 +4,8 @@ import com.solifungi.handtalkgobang.HandTalkApp;
 import com.solifungi.handtalkgobang.controllers.GameController;
 import com.solifungi.handtalkgobang.util.Debugging;
 import com.solifungi.handtalkgobang.util.Reference;
+import com.solifungi.handtalkgobang.util.handlers.EnumHandler.Side;
 import javafx.scene.Group;
-import com.solifungi.handtalkgobang.util.handlers.EnumHandler;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
@@ -14,7 +14,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
-import javafx.scene.text.Text;
 import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 
@@ -56,42 +55,27 @@ public class ChessBoardPane extends StackPane
         else{
             gc.drawImage(whiteImage, cellLength * newPiece.getX(), cellLength * newPiece.getY());
         }
-        renderTriangle(newPiece);
+
+        if(showPieceNum){
+            renderPieceNum();
+        }
+        else{
+            renderTriangle(newPiece);
+        }
     }
 
     public void delPieceOnCanvas(int xPos, int yPos){
         gc.clearRect(cellLength * xPos,cellLength * yPos, cellLength, cellLength);
-        // Delete triangle
-        if(this.getChildren().get(4) instanceof Pane){
-            this.getChildren().remove(4);
-        }
-    }
 
-    public void showPieceNum(boolean show){
-        if(show){
-            ArrayList<ChessPiece> list = HandTalkApp.currentGame.getPiecesList();
-            AnchorPane numPane = new AnchorPane();
-            numPane.setPrefSize(boardLength, boardLength);
-            if(list != null){
-                for(int i = 0; i < list.size(); i++){
-                    Text text = new Text(String.valueOf(i + 1));
-                    StackPane number = new StackPane(text);
-                    number.setPrefSize(cellLength, cellLength);
-                    numPane.getChildren().add(number);
-                    AnchorPane.setTopAnchor(number, list.get(i).getX() * cellLength);
-                    AnchorPane.setLeftAnchor(number, list.get(i).getY() * cellLength);
-                }
+        // Delete triangle or unwanted number
+        try{
+            if(getChildren().get(4) instanceof AnchorPane){
+                renderPieceNum();
             }
-            try{
-                getChildren().set(4, numPane);
-            }catch(IndexOutOfBoundsException e){
-                getChildren().add(4, numPane);
+            else{
+                this.getChildren().remove(4);
             }
-        }
-        else{
-            getChildren().remove(4);
-            renderTriangle(HandTalkApp.currentGame.getLastPiece());
-        }
+        }catch(IndexOutOfBoundsException ignore){}
     }
 
     private final Group axis = new Group();
@@ -99,6 +83,7 @@ public class ChessBoardPane extends StackPane
     private final double boardLength;
     private final double cellLength;
     private final int[][] gameManual;
+    private boolean showPieceNum = false;
 
     /**
      * Render the background image. Always goes first in {@link #renderAll}.
@@ -179,7 +164,7 @@ public class ChessBoardPane extends StackPane
         axisPane.setPrefSize(boardLength + cellLength,boardLength + cellLength);
 
         axis.getChildren().add(axisPane);
-//        axis.setVisible(false); // Default
+        axis.setVisible(false); // Default
         getChildren().add(2, axis);
     }
 
@@ -188,7 +173,7 @@ public class ChessBoardPane extends StackPane
      * This can cause lagging, consider using {@link #renderNewPiece} first.
      */
     private void renderPieces(){
-        if (side_canvas==null){
+        if (side_canvas == null){
             side_canvas = new Canvas(boardLength + cellLength, boardLength + cellLength);
         }
         GraphicsContext gc = side_canvas.getGraphicsContext2D();
@@ -230,25 +215,46 @@ public class ChessBoardPane extends StackPane
         }
     }
 
+    private void renderPieceNum(){
+        ArrayList<ChessPiece> list = HandTalkApp.currentGame.getPiecesList();
+        AnchorPane numPane = new AnchorPane();
+        numPane.setPrefSize(boardLength, boardLength);
+        if(list != null){
+            for(int i = 0; i < list.size(); i++){
+                Label lbl = new Label(String.valueOf(i + 1));
+                lbl.setTextFill(i == list.size() - 1 ? Color.RED : Side.toOpposite(list.get(i).getSide()).getColor());
+                lbl.setStyle("-fx-font-size: 20; -fx-font-weight: bold");
+                StackPane number = new StackPane(lbl);
+                number.setPrefSize(cellLength, cellLength);
+                numPane.getChildren().add(number);
+                AnchorPane.setTopAnchor(number, list.get(i).getY() * cellLength);
+                AnchorPane.setLeftAnchor(number, list.get(i).getX() * cellLength);
+            }
+        }
+        try{
+            getChildren().set(4, numPane);
+        }catch(IndexOutOfBoundsException e){
+            getChildren().add(4, numPane);
+        }
+    }
+
     /* Getter & Setter */
-    @Override
-    public void setWidth(double value) {
-        super.setWidth(value);
-        renderAll();
-    }
-
-    @Override
-    public void setHeight(double value) {
-        super.setHeight(value);
-        renderAll();
-    }
-
     public double getCellLength(){
         return this.cellLength;
     }
 
     public Group getAxis(){
         return this.axis;
+    }
+
+    public void setShowPieceNum(boolean showPieceNum) {
+        this.showPieceNum = showPieceNum;
+        if(showPieceNum){
+            renderPieceNum();
+        }
+        else{
+            renderTriangle(HandTalkApp.currentGame.getLastPiece());
+        }
     }
 
     @Debugging

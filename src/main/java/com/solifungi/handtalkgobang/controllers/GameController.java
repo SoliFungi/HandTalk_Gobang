@@ -54,6 +54,7 @@ public class GameController implements IHandleStage
 
         menuBar.setPrefWidth(gamePane.getWidth());
         gamePane.widthProperty().addListener(ob -> menuBar.setPrefWidth(gamePane.getWidth()));
+
         if(!vsAI){
             switcher.setDisable(true);
         }
@@ -66,8 +67,6 @@ public class GameController implements IHandleStage
             branchEraser.setDisable(true);
             pieceEraser.setDisable(false);
         }
-        pieceEraser.selectedProperty().addListener((ob, oldValue, newValue) ->
-                HandTalkApp.currentChessboard.setOnMouseClicked(newValue ? new ChessDeleteHandler() : new ChessPlaceHandler()));
     }
 
     public void initGame(GobangGame game){
@@ -249,7 +248,7 @@ public class GameController implements IHandleStage
 
     @FXML
     protected void setPieceNumShown(){
-        HandTalkApp.currentChessboard.showPieceNum(showPieceNum.isSelected());
+        HandTalkApp.currentChessboard.setShowPieceNum(showPieceNum.isSelected());
     }
 
     @FXML
@@ -275,16 +274,16 @@ public class GameController implements IHandleStage
             int xPos = (int) (event.getX() / cl);
             int yPos = (int) (event.getY() / cl);
             if(game.playRound(xPos, yPos)){
-                chessBoard.setOnMouseClicked(null);
-                final Runnable acceptInput = () -> {
-                    try{
-                        Thread.sleep(0);
-                    }catch(InterruptedException e){
-                        e.printStackTrace();
-                    }
-                    chessBoard.setOnMouseClicked(this);
-                };
-                new Thread(acceptInput).start();
+//                chessBoard.setOnMouseClicked(null);
+//                final Runnable acceptInput = () -> {
+//                    try{
+//                        Thread.sleep(0);
+//                    }catch(InterruptedException e){
+//                        e.printStackTrace();
+//                    }
+//                    chessBoard.setOnMouseClicked(this);
+//                };
+//                new Thread(acceptInput).start();
 
                 SoundHandler.audio.play();
                 chessBoard.renderNewPiece(game.getLastPiece());
@@ -308,17 +307,6 @@ public class GameController implements IHandleStage
             try{
                 System.out.println(game.getGameManual()[xPos][yPos]);
                 ChessPiece toRemove = new ChessPiece(Side.bySign(game.getGameManual()[xPos][yPos]), xPos, yPos);
-
-                chessBoard.setOnMouseClicked(null);
-                final Runnable acceptInput = () -> {
-                    try{
-                        Thread.sleep(0);
-                    }catch(InterruptedException e){
-                        e.printStackTrace();
-                    }
-                    chessBoard.setOnMouseClicked(this);
-                };
-                new Thread(acceptInput).start();
 
                 game.getPiecesList().remove(toRemove);
                 game.setPieceCount(game.getPiecesList().size());
@@ -344,25 +332,15 @@ public class GameController implements IHandleStage
                 System.out.println(game.getGameManual()[xPos][yPos]);
                 ChessPiece startPiece = new ChessPiece(Side.bySign(game.getGameManual()[xPos][yPos]), xPos, yPos);
 
-                chessBoard.setOnMouseClicked(null);
-                final Runnable acceptInput = () -> {
-                    try{
-                        Thread.sleep(0);
-                    }catch(InterruptedException e){
-                        e.printStackTrace();
-                    }
-                    chessBoard.setOnMouseClicked(this);
-                };
-                new Thread(acceptInput).start();
-
                 ArrayList<ChessPiece> list = game.getPiecesList();
-                ArrayList<ChessPiece> delList = new ArrayList<>();
+//                ArrayList<ChessPiece> delList = new ArrayList<>();
                 int i = list.indexOf(startPiece);
                 for(int j = i; j < list.size(); j++){
                     chessBoard.delPieceOnCanvas(list.get(j).getX(), list.get(j).getY());
-                    delList.add(list.get(j));
+                    list.remove(j);
+//                    delList.add(list.get(j));
                 }
-                list.removeAll(delList);
+//                list.removeAll(delList);
                 game.setPieceCount(game.getPiecesList().size());
                 game.rewriteManualFromList();
             }
