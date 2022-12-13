@@ -16,7 +16,7 @@ public class GobangGame
     private BoardType boardType = GameConfigs.currentType;
     private Side currentSide = Side.BLACK;
     private int winningSide = -1; // -1:underway 0:draw 1:black 2:white
-    private final ArrayList<ChessPiece> piecesList = new ArrayList<>();
+    private ArrayList<ChessPiece> piecesList = new ArrayList<>();
     private int pieceCount = 0;
     private int[][] gameManual = new int[boardType.getSize()][boardType.getSize()];
     private ChessPiece lastPiece = null;
@@ -257,5 +257,9 @@ public class GobangGame
 
     public void setSaveFile(File file) {
         this.saveFile = file;
+    }
+
+    public void setPiecesList(ArrayList<ChessPiece> arrayList){
+        this.piecesList = arrayList;
     }
 }

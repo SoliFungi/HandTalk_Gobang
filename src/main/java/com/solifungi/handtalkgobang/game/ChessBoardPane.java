@@ -74,17 +74,39 @@ public class ChessBoardPane extends StackPane
     }
 
     public void delPieceOnCanvas(int xPos, int yPos){
-        gc.clearRect(cellLength * xPos,cellLength * yPos, cellLength, cellLength);
+        //获取当前棋子表
+        ArrayList<ChessPiece> chess_list = new ArrayList<>();
+        boolean lock = true;
+        System.out.println("del x"+xPos+"   del y"+yPos);
+        for(ChessPiece chessPiece : HandTalkApp.currentGame.getPiecesList()){
+            System.out.println(chessPiece.getX()==xPos && chessPiece.getY()==yPos);
+            if(chessPiece.getX()==xPos && chessPiece.getY()==yPos){
+                lock=false;
+            }
+
+            if(lock){
+                System.out.println("save x"+chessPiece.getX() + "      y"+chessPiece.getY()+"    "+ lock);
+                chess_list.add(chessPiece);
+                continue;
+            }
+            //删除点后的棋子
+            System.out.println("x"+chessPiece.getX() + "      y"+chessPiece.getY());
+            gc.clearRect(cellLength * chessPiece.getX(),cellLength * chessPiece.getY(), cellLength, cellLength);
+        }
+        //更改全局表
+        HandTalkApp.currentGame.setPiecesList(chess_list);
+
+
 
         // Delete triangle or unwanted numbers
-        try{
-            if(getChildren().get(4) instanceof AnchorPane){
-                renderPieceNum();
-            }
-            else{
-                this.getChildren().remove(4);
-            }
-        }catch(IndexOutOfBoundsException ignore){}
+//        try{
+//            if(getChildren().get(4) instanceof AnchorPane){
+//                renderPieceNum();
+//            }
+//            else{
+//                this.getChildren().remove(4);
+//            }
+//        }catch(IndexOutOfBoundsException ignore){}
     }
 
     private final Group axis = new Group();
