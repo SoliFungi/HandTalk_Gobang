@@ -353,19 +353,7 @@ public class GameController implements IHandleStage
             int xPos = (int) (event.getX() / cl);
             int yPos = (int) (event.getY() / cl);
             try{
-                System.out.println(game.getGameManual()[xPos][yPos]);
-                ChessPiece startPiece = new ChessPiece(Side.bySign(game.getGameManual()[xPos][yPos]), xPos, yPos);
-
-                ArrayList<ChessPiece> list = game.getPiecesList();
-//                ArrayList<ChessPiece> delList = new ArrayList<>();
-                int i = list.indexOf(startPiece);
                 chessBoard.delPieceOnCanvas(xPos, yPos);
-//                for(int j = i; j < list.size(); j++){
-//                    chessBoard.delPieceOnCanvas(list.get(j).getX(), list.get(j).getY());
-//                    list.remove(j);
-////                    delList.add(list.get(j));
-//                }
-//                list.removeAll(delList);
                 game.setPieceCount(game.getPiecesList().size());
                 game.rewriteManualFromList();
             }

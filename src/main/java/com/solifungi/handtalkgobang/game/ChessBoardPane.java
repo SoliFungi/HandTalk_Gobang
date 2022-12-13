@@ -85,7 +85,7 @@ public class ChessBoardPane extends StackPane
         int last_piece = -1;
         for(ChessPiece chessPiece : HandTalkApp.currentGame.getPiecesList()){
             if(chessPiece.getX()==xPos && chessPiece.getY()==yPos){
-                lock=false;
+                lock = false;
             }
 
             if(lock){
@@ -106,22 +106,19 @@ public class ChessBoardPane extends StackPane
         HandTalkApp.currentGame.setGameManual(local_manual);
 
         //获取落子焦点
-        ChessPiece chessPiece2 = HandTalkApp.currentGame.getPiecesList().get(last_piece);
-        //渲染指示器终点
-        renderTriangle(chessPiece2);
+        try{
+            HandTalkApp.currentGame.setLastPiece(HandTalkApp.currentGame.getPiecesList().get(last_piece));
+        }catch(IndexOutOfBoundsException e){
+            HandTalkApp.currentGame.setLastPiece(null);
+        }
 
-
-
-
-        // Delete triangle or unwanted numbers
-//        try{
-//            if(getChildren().get(4) instanceof AnchorPane){
-//                renderPieceNum();
-//            }
-//            else{
-//                this.getChildren().remove(4);
-//            }
-//        }catch(IndexOutOfBoundsException ignore){}
+        //渲染指示器终点或棋子编号
+        if(showPieceNum){
+            renderPieceNum();
+        }
+        else{
+            renderTriangle(HandTalkApp.currentGame.getLastPiece());
+        }
     }
 
     private final Group axis = new Group();
@@ -255,7 +252,14 @@ public class ChessBoardPane extends StackPane
      * @param lastOne The last piece on which the sign should be. (If null, no triangle will be rendered)
      */
     private void renderTriangle(@Nullable ChessPiece lastOne){
-        if(lastOne == null) return;
+        if(lastOne == null){
+            try{
+                this.getChildren().remove(4);
+                return;
+            }catch(IndexOutOfBoundsException e){
+                return;
+            }
+        }
         Polygon triangle = new Polygon(cellLength * (lastOne.getX() + 0.75), cellLength * (lastOne.getY() + 0.6443),
                                                cellLength * (lastOne.getX() + 0.25), cellLength * (lastOne.getY() + 0.6443),
                                                cellLength * (lastOne.getX() + 0.5), cellLength * (lastOne.getY() + 0.2113));
