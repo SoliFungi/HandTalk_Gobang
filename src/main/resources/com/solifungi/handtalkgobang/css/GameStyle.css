@@ -3,6 +3,29 @@
     -fx-font: bolder 16pt HGLB_CNKI;
     -fx-background-color: rgba(255,241,194,0.5);
 }
+
 .button:hover{
     -fx-background-color: rgba(255,252,168,0.8);
+}
+
+.right{
+    -fx-alignment: center;
+    -fx-font-size: 12pt;
+}
+
+.text-field{
+    -fx-alignment: center;
+    -fx-max-width: 100px;
+    -fx-focus-traversable: false;
+    -fx-font-size: 12pt;
+    -fx-background-color: transparent;
+}
+
+.text-field:focused{
+    -fx-background-color: white;
+}
+
+#opponents{
+    -fx-font-size: 16pt;
+    -fx-font-weight: bold;
 }

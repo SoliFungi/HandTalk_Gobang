@@ -28,8 +28,12 @@ public class ChessBoardPane extends StackPane
         this.boardLength = GameController.boardPaneHeight * 0.85;
         this.boardSize = game.getBoardType().getSize();
         this.cellLength = boardLength / (boardSize - 1);
-        setMaxSize(boardLength + cellLength,boardLength + cellLength);
         this.gameManual = game.getGameManual();
+
+        // ???
+        setMaxSize(boardLength + cellLength,boardLength + cellLength);
+        setMinSize(boardLength + cellLength,boardLength + cellLength);
+
         blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
         whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength,true,true);
         renderAll();

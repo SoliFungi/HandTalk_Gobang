@@ -3,14 +3,14 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Text?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.Background?>
 <?import javafx.scene.layout.BackgroundImage?>
 <?import javafx.scene.image.Image?>
-
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
+
+<?import javafx.geometry.Insets?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.GameController"
             fx:id="gamePane" minWidth="960" minHeight="720">
     <fx:define>
@@ -61,14 +61,21 @@
             <ImageView>
                 <Image url="@../images/pic.png" smooth="true"/>
             </ImageView>
+
+            <!-- 显示和修改对局者、对局名称的容器 -->
             <VBox spacing="10">
-                <Label text="%text.opponents" style="-fx-font-size: 16pt"/>
-                <HBox spacing="10">
-                    <Label text="%side.black"/>
-                    <Label fx:id="blackName"/>
-                    <Label text="vs"/>
-                    <Label text="%side.white"/>
-                    <Label fx:id="whiteName"/>
+                <padding>
+                    <Insets left="10"/>
+                </padding>
+                <Label fx:id="opponents" text="%text.opponents"/>
+                <HBox alignment="CENTER_LEFT" fx:id="blackBox" spacing="10">
+                    <Label text="%side.black" styleClass="right"/>
+                    <TextField fx:id="blackField" onAction="#getBlackName"/>
+                </HBox>
+                <Label text="vs" styleClass="right"/>
+                <HBox alignment="CENTER_LEFT"  fx:id="whiteBox" spacing="10">
+                    <Label text="%side.white" styleClass="right"/>
+                    <TextField fx:id="whiteField" onAction="#getWhiteName"/>
                 </HBox>
             </VBox>
             <Button text="%button.game_options" alignment="CENTER_RIGHT" onAction="#openInGameOptions"/>

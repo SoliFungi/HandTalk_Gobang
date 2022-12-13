@@ -30,15 +30,17 @@ import java.util.ArrayList;
 
 public class GameController implements IHandleStage
 {
-    public static double boardPaneHeight = 720; // Init not used, just in case
+    public static double boardPaneHeight;
     public static boolean vsAI = false;
 
-    @FXML public StackPane boardPane = new StackPane();
-    @FXML public BorderPane gamePane; // The pane fills the whole game scene. (Assigned before method <initialize>)
+    @FXML StackPane boardPane = new StackPane();
+    @FXML BorderPane gamePane; // The pane fills the whole game scene. (Assigned before method <initialize>)
     @FXML MenuBar menuBar;
     @FXML MenuItem switcher;
     @FXML CheckMenuItem pieceEraser, branchEraser, screenMode, showAxis, showPieceNum;
-    @FXML Label blackName, whiteName;
+    @FXML HBox blackBox, whiteBox;
+    @FXML Label opponents;
+    @FXML TextField blackField, whiteField;
 
     /* StageHandler */
     StageHandler handler;
@@ -79,8 +81,10 @@ public class GameController implements IHandleStage
         boardPane.getChildren().add(chessBoard);
         chessBoard.setOnMouseClicked(new ChessPlaceHandler());
 
-        blackName.setText(game.blackName);
-        whiteName.setText(game.whiteName);
+        blackField.setText(game.blackName);
+        blackField.setBorder(null);
+        whiteField.setText(game.whiteName);
+        whiteField.setBorder(null);
     }
 
     /* Game Save Methods */
@@ -144,6 +148,7 @@ public class GameController implements IHandleStage
     }
 
     /* FXML EventHandler Methods */
+    // Menubar controls
     @FXML
     protected void restartGame(){
         if(HandTalkApp.currentGame.getSaveFile() == null){
@@ -254,6 +259,19 @@ public class GameController implements IHandleStage
     @FXML
     protected void setPieceNumShown(){
         HandTalkApp.currentChessboard.setShowPieceNum(showPieceNum.isSelected());
+    }
+
+    // Right side controls
+    @FXML
+    protected void getBlackName(){
+        HandTalkApp.currentGame.blackName = blackField.getText();
+        gamePane.requestFocus();
+    }
+
+    @FXML
+    protected void getWhiteName(){
+        HandTalkApp.currentGame.whiteName = whiteField.getText();
+        gamePane.requestFocus();
     }
 
     @FXML
