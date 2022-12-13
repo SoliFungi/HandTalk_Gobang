@@ -5,10 +5,6 @@ import com.solifungi.handtalkgobang.util.handlers.EnumHandler.Side;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 public class GobangGame
 {
     private String gameTitle = "untitled";
@@ -49,60 +45,49 @@ public class GobangGame
         return judgeRow(lastPiece) || judgeColumn(lastPiece) || judgeMainDiag(lastPiece) || judgeSubDiag(lastPiece);
     }
 
-    private boolean ex_Winning(ChessPiece piece){
-        final Side side = piece.getSide();
-        //白子不受影响
-        if (side ==null || side.getSign() == 2 ){
-            return false;
-        }
-
-        //棋盘大小
-        final int size = this.getBoardType().getSize()-1;
-        final int SIDE_POS_X = piece.getPos()[0];
-        final int SIDE_POS_Y = piece.getPos()[1];
-        int isFree = 0;
-        ArrayList<int[]> pos_array = new ArrayList<>();
-
-        //三三禁手
-        //判断是否存在三子/四子连接情况
-        //水平
-        for(int x = SIDE_POS_X;x>=0 && x>=SIDE_POS_X-4;){
-            x = x -1;
-            if(gameManual[x][SIDE_POS_Y] == side.getSign()){
-                pos_array.add(new int[]{x, SIDE_POS_Y});
-            }else {
-                break;
-            }
-        }
-        for(int x = SIDE_POS_X;x<=size && x>=SIDE_POS_X+4;){
-            x = x -1;
-            if(gameManual[x][SIDE_POS_Y] == side.getSign()){
-                pos_array.add(new int[]{x, SIDE_POS_Y});
-            }else {
-                break;
-            }
-        }
-        //遍历子关联
-        for (int[] side_array: pos_array) {
-            int count = -1;
-            int x = side_array[0];
-            int y = side_array[1];
-
-        }
-
-        return true;
-    }
-
-//    private boolean isFreeSide(int FreeType, ChessPiece piece, int[] side_pos){
-//
-//        //水平→判定
-//        for (int pos_x = SIDE_POS_X; pos_x>=0;){
-//            pos_x+= FreeType-1;
-//            if(gameManual[pos_x][SIDE_POS_Y] == 1 || gameManual[pos_x][SIDE_POS_Y] == 2) {
-//                return false;
-//            };
-//            return true;
+//    private boolean ex_Winning(ChessPiece piece){
+//        final Side side = piece.getSide();
+//        //白子不受影响
+//        if (side ==null || side.getSign() == 2 ){
+//            return false;
 //        }
+//
+//        //棋盘大小
+//        final int size = this.getBoardType().getSize()-1;
+//        final int SIDE_POS_X = piece.getPos()[0];
+//        final int SIDE_POS_Y = piece.getPos()[1];
+//        ArrayList<int[]> pos_array = new ArrayList<>();
+//
+//        //三三禁手
+//        //判断是否存在三子/四子连接情况
+//        //水平
+//        for(int x = SIDE_POS_X;x>=0 && x>=SIDE_POS_X-4;){
+//            x = x -1;
+//            if(gameManual[x][SIDE_POS_Y] == side.getSign()){
+//                pos_array.add(new int[]{x, SIDE_POS_Y});
+//            }else {
+//                break;
+//            }
+//        }
+//        for(int x = SIDE_POS_X;x<=size && x>=SIDE_POS_X+4;){
+//            x = x -1;
+//            if(gameManual[x][SIDE_POS_Y] == side.getSign()){
+//                pos_array.add(new int[]{x, SIDE_POS_Y});
+//            }else {
+//                break;
+//            }
+//        }
+//        //遍历子关联
+//        for (int[] side_array: pos_array) {
+//            int count = -1;
+//            int x = side_array[0];
+//            int y = side_array[1];
+
+//        }
+
+//        return true;
+//    }
+
 
 
     private boolean judgeRow(ChessPiece piece){
