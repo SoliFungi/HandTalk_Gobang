@@ -78,17 +78,50 @@ public class ChessBoardPane extends StackPane
     }
 
     public void delPieceOnCanvas(int xPos, int yPos){
-        gc.clearRect(cellLength * xPos,cellLength * yPos, cellLength, cellLength);
+        //获取当前棋子表
+        ArrayList<ChessPiece> chess_list = new ArrayList<>();
+        boolean lock = true;
+        //删除终末焦点下标
+        int last_piece = -1;
+        for(ChessPiece chessPiece : HandTalkApp.currentGame.getPiecesList()){
+            if(chessPiece.getX()==xPos && chessPiece.getY()==yPos){
+                lock=false;
+            }
+
+            if(lock){
+                chess_list.add(chessPiece);
+                last_piece += 1;
+                continue;
+            }
+            //删除点后的棋子
+            gc.clearRect(cellLength * chessPiece.getX(),cellLength * chessPiece.getY(), cellLength, cellLength);
+        }
+        //更改全局渲染表
+        HandTalkApp.currentGame.setPiecesList(chess_list);
+        //更改全局判定表
+        int[][] local_manual = new int[boardSize][boardSize];
+        for (ChessPiece chessPiece: HandTalkApp.currentGame.getPiecesList()){
+            local_manual[chessPiece.getX()][chessPiece.getY()] = chessPiece.getSide().getSign();
+        }
+        HandTalkApp.currentGame.setGameManual(local_manual);
+
+        //获取落子焦点
+        ChessPiece chessPiece2 = HandTalkApp.currentGame.getPiecesList().get(last_piece);
+        //渲染指示器终点
+        renderTriangle(chessPiece2);
+
+
+
 
         // Delete triangle or unwanted numbers
-        try{
-            if(getChildren().get(4) instanceof AnchorPane){
-                renderPieceNum();
-            }
-            else{
-                this.getChildren().remove(4);
-            }
-        }catch(IndexOutOfBoundsException ignore){}
+//        try{
+//            if(getChildren().get(4) instanceof AnchorPane){
+//                renderPieceNum();
+//            }
+//            else{
+//                this.getChildren().remove(4);
+//            }
+//        }catch(IndexOutOfBoundsException ignore){}
     }
 
     private final Group axis = new Group();
