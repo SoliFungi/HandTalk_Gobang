@@ -24,12 +24,13 @@ public class Reference {
     public static final String BOARD_IMAGE = "file:src/main/resources/com/solifungi/handtalkgobang/images/board.png";
 
     /*Sounds*/
-    public static final String BACKGROUND_MUSIC = "src/main/resources/com/solifungi/handtalkgobang/sounds/music01.mp3";
+    public static final String BACKGROUND_MUSIC = "src/main/resources/com/solifungi/handtalkgobang/sounds/music.mp3";
+    public static final String PIECE_PLACE_SOUND = "src/main/resources/com/solifungi/handtalkgobang/sounds/piece.wav";
 
     /*Locale*/
     public static final String LANG_RESOURCE = "com/solifungi/handtalkgobang/languages/lang";
     public static HashMap<String, String> stageTitleKeys = new HashMap<>();
-    public static void setTitleMap(){
+    static {
         stageTitleKeys.put(MAIN, "title.primary_stage");
         stageTitleKeys.put(OPTION, "title.option");
         stageTitleKeys.put(OPTION_IN, "title.option_ingame");

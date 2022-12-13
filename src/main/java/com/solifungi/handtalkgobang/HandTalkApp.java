@@ -20,12 +20,12 @@ public class HandTalkApp extends Application
 
     @Override
     public void start(Stage primaryStage) {
-        i18n = ResourceBundle.getBundle(Reference.LANG_RESOURCE, GameConfigs.currentLocale);
-        Reference.setTitleMap();
-
         FileHandler.loadConfig();
+        i18n = ResourceBundle.getBundle(Reference.LANG_RESOURCE, GameConfigs.currentLocale);
+
         StageHandler handler = new StageHandler();
         handler.setPrimaryStage(primaryStage);
+
         SoundHandler.setAndPlayBGM();
     }
 

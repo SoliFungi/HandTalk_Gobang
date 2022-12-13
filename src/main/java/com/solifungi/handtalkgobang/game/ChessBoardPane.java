@@ -4,31 +4,24 @@ import com.solifungi.handtalkgobang.HandTalkApp;
 import com.solifungi.handtalkgobang.controllers.GameController;
 import com.solifungi.handtalkgobang.util.Debugging;
 import com.solifungi.handtalkgobang.util.Reference;
-import com.solifungi.handtalkgobang.util.handlers.EnumHandler;
+import com.solifungi.handtalkgobang.util.handlers.EnumHandler.Side;
+import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 
 public class ChessBoardPane extends StackPane
 {
-    private final int boardSize;
-    private final double boardLength;
-    private final double cellLength;
-    private final int[][] gameManual;
-    private static Image blackImage;
-    private static Image whiteImage;
-
-    private static GraphicsContext gc;
-
+    static GraphicsContext gc;
     private static Canvas side_canvas;
+    private static Image blackImage, whiteImage;
 
     public ChessBoardPane(GobangGame game){
         this.boardSize = game.getBoardType().getSize();
@@ -36,21 +29,61 @@ public class ChessBoardPane extends StackPane
         this.cellLength = boardLength / (boardSize - 1);
         this.gameManual = game.getGameManual();
         blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
-        whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength, true, true);
-
-
-
-        //this.getParent()
-
+        whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength,true,true);
         renderAll();
     }
 
     public void renderAll(){
         this.getChildren().clear();
-        renderBackground();
-        renderBoard();
-        renderPieces();
+        renderBackground(); // 0
+        renderBoard(); // 1
+        renderAxis(); // 2
+        renderPieces(); // 3
+        // 4 = triangle or pieceNum
     }
+
+    /**
+     * Render the single new chess piece instead of all.
+     *
+     * @param newPiece The new piece to render (=lastPiece)
+     */
+    public void renderNewPiece(ChessPiece newPiece){
+        gc = ((Canvas)this.getChildren().get(3)).getGraphicsContext2D();
+        if(newPiece.getSide().getSign() == 1){
+            gc.drawImage(blackImage, cellLength * newPiece.getX(), cellLength * newPiece.getY());
+        }
+        else{
+            gc.drawImage(whiteImage, cellLength * newPiece.getX(), cellLength * newPiece.getY());
+        }
+
+        if(showPieceNum){
+            renderPieceNum();
+        }
+        else{
+            renderTriangle(newPiece);
+        }
+    }
+
+    public void delPieceOnCanvas(int xPos, int yPos){
+        gc.clearRect(cellLength * xPos,cellLength * yPos, cellLength, cellLength);
+
+        // Delete triangle or unwanted number
+        try{
+            if(getChildren().get(4) instanceof AnchorPane){
+                renderPieceNum();
+            }
+            else{
+                this.getChildren().remove(4);
+            }
+        }catch(IndexOutOfBoundsException ignore){}
+    }
+
+    private final Group axis = new Group();
+    private final int boardSize;
+    private final double boardLength;
+    private final double cellLength;
+    private final int[][] gameManual;
+    private boolean showPieceNum = false;
 
     /**
      * Render the background image. Always goes first in {@link #renderAll}.
@@ -112,65 +145,54 @@ public class ChessBoardPane extends StackPane
         return starList;
     }
 
+    private void renderAxis(){
+        if(!axis.getChildren().isEmpty()){
+            axis.getChildren().clear();
+        }
+
+        VBox center = new VBox();
+        center.setPrefSize(boardLength + cellLength * 0.1,boardLength + cellLength * 0.1);
+        VBox numColLeft = new VBox(cellLength * 0.5), numColRight = new VBox(cellLength * 0.5);
+        HBox letterRowUp = new HBox(cellLength * 0.5), letterRowDown = new HBox(cellLength * 0.5);
+        for(int i = 0; i < boardSize; i ++){
+            numColLeft.getChildren().add(new Label(String.valueOf(boardLength - i)));
+            numColRight.getChildren().add(new Label(String.valueOf(boardLength - i)));
+            letterRowUp.getChildren().add(new Label(String.valueOf('A' + i)));
+            letterRowDown.getChildren().add(new Label(String.valueOf('A' + i)));
+        }
+        BorderPane axisPane = new BorderPane(center, letterRowUp, numColRight, letterRowDown, numColLeft);
+        axisPane.setPrefSize(boardLength + cellLength,boardLength + cellLength);
+
+        axis.getChildren().add(axisPane);
+        axis.setVisible(false); // Default
+        getChildren().add(2, axis);
+    }
+
     /**
      * Render all chess pieces. Always goes last in {@link #renderAll}.<br>
      * This can cause lagging, consider using {@link #renderNewPiece} first.
      */
     private void renderPieces(){
-        if (side_canvas==null){
+        if (side_canvas == null){
             side_canvas = new Canvas(boardLength + cellLength, boardLength + cellLength);
         }
-//        Canvas canvas = new Canvas(boardLength + cellLength, boardLength + cellLength);
         GraphicsContext gc = side_canvas.getGraphicsContext2D();
-//        Image blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
-//        Image whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength,true,true);
-        //sfd local
-//        for(int i = 0; i < boardSize; i++){
-//            for(int j = 0; j < boardSize; j++){
-//                if(gameManual[i][j] == 1){
-//                    gc.drawImage(blackImage, cellLength * i, cellLength * j);
-//                }
-//                else if(gameManual[i][j] == 2){
-//                    gc.drawImage(whiteImage, cellLength * i, cellLength * j);
-//
-//                }
-//            }
-//        }
+        for(int i = 0; i < boardSize; i++){
+            for(int j = 0; j < boardSize; j++){
+                if(gameManual[i][j] == 1){
+                    gc.drawImage(blackImage, cellLength * i, cellLength * j);
+                }
+                else if(gameManual[i][j] == 2){
+                    gc.drawImage(whiteImage, cellLength * i, cellLength * j);
+                }
+            }
+        }
         try{
-            this.getChildren().set(2, side_canvas); // Rerender
+            this.getChildren().set(3, side_canvas); // Rerender
         }catch(IndexOutOfBoundsException e){
             this.getChildren().add(side_canvas); // Initial render
         }
         renderTriangle(HandTalkApp.currentGame.getLastPiece());
-    }
-
-    /**
-     * Render the single new chess piece instead of all.
-     *
-     * @param newPiece The new piece to render (=lastPiece)
-     */
-    public void renderNewPiece(ChessPiece newPiece){
-        gc = ((Canvas)this.getChildren().get(2)).getGraphicsContext2D();
-        if(newPiece.getSide().getSign() == 1){
-            //Image blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
-            gc.drawImage(blackImage, cellLength * newPiece.getX(), cellLength * newPiece.getY());
-
-        }
-        else{
-            //Image whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength,true,true);
-            gc.drawImage(whiteImage, cellLength * newPiece.getX(), cellLength * newPiece.getY());
-        }
-        //renderTriangle(newPiece);
-    }
-
-    public void delPieceOnCanvas(int xPos, int yPos){
-//        GraphicsContext gc = ((Canvas)this.getChildren().get(2)).getGraphicsContext2D();
-        gc.clearRect(cellLength * xPos, cellLength * yPos, cellLength, cellLength);
-        // Delete triangle
-        if(this.getChildren().get(2) != null){
-            this.getChildren().remove(2);
-        }
-//        renderTriangle(new ChessPiece(EnumHandler.Side.WHITE,xPos,yPos));
     }
 
     /**
@@ -187,26 +209,52 @@ public class ChessBoardPane extends StackPane
         triangle.setFill(Color.RED);
         Pane pane = new Pane(triangle);
         try{
-            this.getChildren().set(3, pane); // Rerender
+            this.getChildren().set(4, pane); // Rerender
         }catch(IndexOutOfBoundsException e){
             this.getChildren().add(pane); // Initial render
         }
     }
 
-    @Override
-    public void setWidth(double value) {
-        super.setWidth(value);
-        renderAll();
+    private void renderPieceNum(){
+        ArrayList<ChessPiece> list = HandTalkApp.currentGame.getPiecesList();
+        AnchorPane numPane = new AnchorPane();
+        numPane.setPrefSize(boardLength, boardLength);
+        if(list != null){
+            for(int i = 0; i < list.size(); i++){
+                Label lbl = new Label(String.valueOf(i + 1));
+                lbl.setTextFill(i == list.size() - 1 ? Color.RED : Side.toOpposite(list.get(i).getSide()).getColor());
+                lbl.setStyle("-fx-font-size: 20; -fx-font-weight: bold");
+                StackPane number = new StackPane(lbl);
+                number.setPrefSize(cellLength, cellLength);
+                numPane.getChildren().add(number);
+                AnchorPane.setTopAnchor(number, list.get(i).getY() * cellLength);
+                AnchorPane.setLeftAnchor(number, list.get(i).getX() * cellLength);
+            }
+        }
+        try{
+            getChildren().set(4, numPane);
+        }catch(IndexOutOfBoundsException e){
+            getChildren().add(4, numPane);
+        }
     }
 
-    @Override
-    public void setHeight(double value) {
-        super.setHeight(value);
-        renderAll();
-    }
-
+    /* Getter & Setter */
     public double getCellLength(){
         return this.cellLength;
+    }
+
+    public Group getAxis(){
+        return this.axis;
+    }
+
+    public void setShowPieceNum(boolean showPieceNum) {
+        this.showPieceNum = showPieceNum;
+        if(showPieceNum){
+            renderPieceNum();
+        }
+        else{
+            renderTriangle(HandTalkApp.currentGame.getLastPiece());
+        }
     }
 
     @Debugging

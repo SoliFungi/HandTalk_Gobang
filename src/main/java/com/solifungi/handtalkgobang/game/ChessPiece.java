@@ -31,8 +31,15 @@ public class ChessPiece
     }
 
     @Override
-    public boolean equals(Object obj){
-        return (obj instanceof ChessPiece) && this.toString().equals(obj.toString());
+    public boolean equals(Object anObject){
+        if(this == anObject){
+            return true;
+        }
+        if(anObject instanceof ChessPiece){
+            ChessPiece anPiece = (ChessPiece) anObject;
+            return this.side.equals(anPiece.side) && this.getX() == anPiece.getX() && this.getY() == anPiece.getY();
+        }
+        return false;
     }
 
     @Override
