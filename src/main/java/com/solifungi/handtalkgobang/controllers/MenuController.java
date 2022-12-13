@@ -1,5 +1,6 @@
 package com.solifungi.handtalkgobang.controllers;
 
+import com.solifungi.handtalkgobang.HandTalkApp;
 import com.solifungi.handtalkgobang.game.GameConfigs;
 import com.solifungi.handtalkgobang.util.IHandleStage;
 import com.solifungi.handtalkgobang.util.Reference;
@@ -8,8 +9,8 @@ import com.solifungi.handtalkgobang.util.handlers.StageHandler;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCombination;
+import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 public class MenuController implements IHandleStage
@@ -46,10 +47,14 @@ public class MenuController implements IHandleStage
     protected void onGameStarted() {
         handler.loadStage(Reference.GAME, Reference.GAME_CSS, StageStyle.DECORATED);
         handler.changeStage(Reference.MAIN, Reference.GAME);
-        handler.getStage(Reference.GAME).setFullScreenExitHint("");
-        handler.getStage(Reference.GAME).setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+
+        Stage gameStage = handler.getStage(Reference.GAME);
+        gameStage.fullScreenProperty().addListener((ob, old, value) ->
+                HandTalkApp.currentChessboard.setBoardLength(value ? gameStage.getHeight() * 0.85 : GameController.boardPaneHeight * 0.85));
+        gameStage.setFullScreenExitHint("");
+        gameStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
         if(GameConfigs.isFullScreen){
-            handler.getStage(Reference.GAME).setFullScreen(true);
+            gameStage.setFullScreen(true);
         }
     }
 

@@ -5,6 +5,7 @@ import com.solifungi.handtalkgobang.controllers.GameController;
 import com.solifungi.handtalkgobang.util.Debugging;
 import com.solifungi.handtalkgobang.util.Reference;
 import com.solifungi.handtalkgobang.util.handlers.EnumHandler.Side;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -20,13 +21,14 @@ import java.util.ArrayList;
 public class ChessBoardPane extends StackPane
 {
     static GraphicsContext gc;
-    private static Canvas side_canvas;
+    private static Canvas side_canvas, board_canvas;
     private static Image blackImage, whiteImage;
 
     public ChessBoardPane(GobangGame game){
+        this.boardLength = GameController.boardPaneHeight * 0.85;
         this.boardSize = game.getBoardType().getSize();
-        this.boardLength = GameController.stageHeight * 0.85;
         this.cellLength = boardLength / (boardSize - 1);
+        setMaxSize(boardLength + cellLength,boardLength + cellLength);
         this.gameManual = game.getGameManual();
         blackImage = new Image(Reference.BLACK_IMAGE, cellLength, cellLength,true,true);
         whiteImage = new Image(Reference.WHITE_IMAGE, cellLength, cellLength,true,true);
@@ -34,7 +36,14 @@ public class ChessBoardPane extends StackPane
     }
 
     public void renderAll(){
-        this.getChildren().clear();
+        getChildren().clear();
+        if(side_canvas != null){
+            gc.clearRect(0,0, side_canvas.getWidth(), side_canvas.getHeight());
+        }
+        if(board_canvas != null){
+            board_canvas.getGraphicsContext2D().clearRect(0, 0, board_canvas.getWidth(), board_canvas.getHeight());
+        }
+
         renderBackground(); // 0
         renderBoard(); // 1
         renderAxis(); // 2
@@ -67,7 +76,7 @@ public class ChessBoardPane extends StackPane
     public void delPieceOnCanvas(int xPos, int yPos){
         gc.clearRect(cellLength * xPos,cellLength * yPos, cellLength, cellLength);
 
-        // Delete triangle or unwanted number
+        // Delete triangle or unwanted numbers
         try{
             if(getChildren().get(4) instanceof AnchorPane){
                 renderPieceNum();
@@ -80,8 +89,7 @@ public class ChessBoardPane extends StackPane
 
     private final Group axis = new Group();
     private final int boardSize;
-    private final double boardLength;
-    private final double cellLength;
+    private double boardLength, cellLength;
     private final int[][] gameManual;
     private boolean showPieceNum = false;
 
@@ -100,9 +108,9 @@ public class ChessBoardPane extends StackPane
      */
     private void renderBoard(){
         double ep = 2; // Extra pixels for borderlines to fully render.
-        Canvas canvas = new Canvas(boardLength + ep * 2, boardLength + ep * 2);
-        GraphicsContext context = canvas.getGraphicsContext2D();
-        context.clearRect(0,0, canvas.getWidth(), canvas.getHeight());
+        board_canvas = new Canvas(boardLength + ep * 2, boardLength + ep * 2);
+        GraphicsContext context = board_canvas.getGraphicsContext2D();
+        context.clearRect(0,0, board_canvas.getWidth(), board_canvas.getHeight());
         context.setStroke(Color.BLACK);
         context.setLineWidth(1.5);
         context.setFill(Color.BLACK);
@@ -116,7 +124,7 @@ public class ChessBoardPane extends StackPane
             context.fillOval(pos[0] * cellLength - cellLength / 8 + ep, pos[1] * cellLength - cellLength / 8 + ep,cellLength / 4, cellLength / 4);
         }
 
-        this.getChildren().add(1, canvas);
+        this.getChildren().add(1, board_canvas);
     }
 
     /**
@@ -145,23 +153,32 @@ public class ChessBoardPane extends StackPane
         return starList;
     }
 
+    // 绘制1-A型坐标图层
     private void renderAxis(){
         if(!axis.getChildren().isEmpty()){
             axis.getChildren().clear();
         }
 
         VBox center = new VBox();
-        center.setPrefSize(boardLength + cellLength * 0.1,boardLength + cellLength * 0.1);
-        VBox numColLeft = new VBox(cellLength * 0.5), numColRight = new VBox(cellLength * 0.5);
-        HBox letterRowUp = new HBox(cellLength * 0.5), letterRowDown = new HBox(cellLength * 0.5);
+        VBox numColLeft = new VBox(cellLength * 0.635), numColRight = new VBox(cellLength * 0.635);
+        HBox letterRowUp = new HBox(cellLength * 0.8), letterRowDown = new HBox(cellLength * 0.8);
         for(int i = 0; i < boardSize; i ++){
-            numColLeft.getChildren().add(new Label(String.valueOf(boardLength - i)));
-            numColRight.getChildren().add(new Label(String.valueOf(boardLength - i)));
-            letterRowUp.getChildren().add(new Label(String.valueOf('A' + i)));
-            letterRowDown.getChildren().add(new Label(String.valueOf('A' + i)));
+            numColLeft.getChildren().add(new Label(String.valueOf(boardSize - i)));
+            numColRight.getChildren().add(new Label(String.valueOf(boardSize - i)));
+            letterRowUp.getChildren().add(new Label(String.valueOf((char)('A' + i))));
+            letterRowDown.getChildren().add(new Label(String.valueOf((char)('A' + i))));
         }
         BorderPane axisPane = new BorderPane(center, letterRowUp, numColRight, letterRowDown, numColLeft);
+        numColLeft.setMinWidth(cellLength * 0.5);
+        numColRight.setMinWidth(cellLength * 0.5);
+        letterRowUp.setMinHeight(cellLength * 0.5);
+        letterRowDown.setMinHeight(cellLength * 0.5);
         axisPane.setPrefSize(boardLength + cellLength,boardLength + cellLength);
+
+        numColLeft.setAlignment(Pos.CENTER);
+        numColRight.setAlignment(Pos.CENTER);
+        letterRowUp.setAlignment(Pos.CENTER);
+        letterRowDown.setAlignment(Pos.CENTER);
 
         axis.getChildren().add(axisPane);
         axis.setVisible(false); // Default
@@ -208,6 +225,7 @@ public class ChessBoardPane extends StackPane
         triangle.setStroke(Color.RED);
         triangle.setFill(Color.RED);
         Pane pane = new Pane(triangle);
+        pane.setMaxSize(boardLength + cellLength, boardLength + cellLength);
         try{
             this.getChildren().set(4, pane); // Rerender
         }catch(IndexOutOfBoundsException e){
@@ -241,6 +259,12 @@ public class ChessBoardPane extends StackPane
     /* Getter & Setter */
     public double getCellLength(){
         return this.cellLength;
+    }
+
+    public void setBoardLength(double value){
+        this.boardLength = value;
+        this.cellLength = boardLength / (boardSize - 1);
+        renderAll();
     }
 
     public Group getAxis(){
