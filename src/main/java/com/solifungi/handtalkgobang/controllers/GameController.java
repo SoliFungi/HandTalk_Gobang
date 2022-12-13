@@ -38,6 +38,7 @@ public class GameController implements IHandleStage
     @FXML MenuBar menuBar;
     @FXML MenuItem switcher;
     @FXML CheckMenuItem pieceEraser, branchEraser, screenMode, showAxis, showPieceNum;
+    @FXML Label blackName, whiteName;
 
     /* StageHandler */
     StageHandler handler;
@@ -77,6 +78,9 @@ public class GameController implements IHandleStage
         boardPane.getChildren().clear();
         boardPane.getChildren().add(chessBoard);
         chessBoard.setOnMouseClicked(new ChessPlaceHandler());
+
+        blackName.setText(game.blackName);
+        whiteName.setText(game.whiteName);
     }
 
     /* Game Save Methods */

@@ -1,3 +1,8 @@
-.menu:hover{
-
+.button{
+    -fx-focus-traversable: false;
+    -fx-font: bolder 16pt HGLB_CNKI;
+    -fx-background-color: rgba(255,241,194,0.5);
+}
+.button:hover{
+    -fx-background-color: rgba(255,252,168,0.8);
 }

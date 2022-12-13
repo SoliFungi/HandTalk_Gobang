@@ -23,7 +23,6 @@ public class GobangGame
     private File saveFile = null;
     public boolean sideLock = false;
 
-
     /* RunGame Methods */
     public boolean playRound(int xPos, int yPos){
         if(gameManual[xPos][yPos] == 0){

@@ -9,6 +9,8 @@
 <?import javafx.scene.layout.BackgroundImage?>
 <?import javafx.scene.image.Image?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.GameController"
             fx:id="gamePane" minWidth="960" minHeight="720">
     <fx:define>
@@ -55,9 +57,19 @@
     </top>
 
     <right>
-        <VBox prefWidth="200" style="-fx-background-color: rgba(255,255,255,0.5); -fx-background-radius: 5%">
-            <VBox alignment="TOP_CENTER" >
-                <Text text="Gobang Game" textAlignment="CENTER"/>
+        <VBox spacing="30" alignment="TOP_CENTER" prefWidth="200" style="-fx-background-color: rgba(255,255,255,0.5)">
+            <ImageView>
+                <Image url="@../images/pic.png" smooth="true"/>
+            </ImageView>
+            <VBox spacing="10">
+                <Label text="%text.opponents" style="-fx-font-size: 16pt"/>
+                <HBox spacing="10">
+                    <Label text="%side.black"/>
+                    <Label fx:id="blackName"/>
+                    <Label text="vs"/>
+                    <Label text="%side.white"/>
+                    <Label fx:id="whiteName"/>
+                </HBox>
             </VBox>
             <Button text="%button.game_options" alignment="CENTER_RIGHT" onAction="#openInGameOptions"/>
             <Button text="%button.exit_to_menu" alignment="CENTER_RIGHT" onAction="#saveAndQuit"/>
