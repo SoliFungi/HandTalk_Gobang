@@ -223,6 +223,10 @@ public class GobangGame
         return this.gameManual;
     }
 
+    protected void setGameManual(int[][] new_gameManual){
+        this.gameManual = new_gameManual;
+    }
+
     public ChessPiece getLastPiece(){
         return this.lastPiece;
     }
