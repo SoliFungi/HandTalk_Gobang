@@ -2,9 +2,12 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Background?>
+<?import javafx.scene.layout.BackgroundImage?>
+<?import javafx.scene.image.Image?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="com.solifungi.handtalkgobang.controllers.GameController"
             fx:id="gamePane" minWidth="960" minHeight="720">
@@ -15,6 +18,8 @@
 
     <top>
         <MenuBar fx:id="menuBar">
+
+            <!-- 文件 -->
             <Menu text="%menu.file">
                 <MenuItem text="%menu.file.new_game" onAction="#restartGame"/>
                 <MenuItem text="%menu.file.open" onAction="#loadGame"/>
@@ -22,12 +27,16 @@
                 <MenuItem text="%menu.file.save_as" onAction="#saveGameAs"/>
                 <MenuItem text="%menu.file.game_info" onAction="#showGameInfo"/>
             </Menu>
+
+            <!-- 对局 -->
             <Menu text="%menu.game">
                 <MenuItem fx:id="switcher" text="%menu.game.switch_side" onAction="#switchSide"/>
                 <MenuItem text="%menu.game.forfeit" onAction="#forfeit"/>
                 <RadioMenuItem toggleGroup="$poe" text="%menu.game.pvp" onAction="#setPVP" selected="true"/>
                 <RadioMenuItem toggleGroup="$poe" text="%menu.game.pve" onAction="#setPVE"/>
             </Menu>
+
+            <!-- 编辑 -->
             <Menu text="%menu.edit">
                 <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.in_turn" onAction="#setInTurn" selected="true"/>
                 <RadioMenuItem toggleGroup="$takeTurn" text="%menu.edit.black_only" onAction="#setBlackOnly"/>
@@ -35,23 +44,39 @@
                 <CheckMenuItem fx:id="pieceEraser" text="%menu.edit.piece_eraser" onAction="#pieceEraseMode"/>
                 <CheckMenuItem fx:id="branchEraser" text="%menu.edit.branch_eraser" onAction="#branchEraseMode"/>
             </Menu>
+
+            <!-- 场景 -->
             <Menu text="%menu.scene">
-                <CheckMenuItem fx:id="screenMode" text="%menu.scene.fullscreen" onAction="#setScreenMode"/>
+                <CheckMenuItem fx:id="screenMode" text="%menu.scene.fullscreen" onAction="#setScreenMode" disable="true"/>
                 <CheckMenuItem fx:id="showAxis" text="%menu.scene.show_axis" onAction="#setAxisVisibility"/>
                 <CheckMenuItem fx:id="showPieceNum" text="%menu.scene.show_num" onAction="#setPieceNumShown"/>
             </Menu>
         </MenuBar>
     </top>
+
     <right>
-        <VBox>
+        <VBox prefWidth="200" style="-fx-background-color: rgba(255,255,255,0.5); -fx-background-radius: 5%">
             <VBox alignment="TOP_CENTER" >
                 <Text text="Gobang Game" textAlignment="CENTER"/>
             </VBox>
             <Button text="%button.game_options" alignment="CENTER_RIGHT" onAction="#openInGameOptions"/>
-            <Button text="%button.save_game" alignment="CENTER_RIGHT" onAction="#saveAndQuit"/>
+            <Button text="%button.exit_to_menu" alignment="CENTER_RIGHT" onAction="#saveAndQuit"/>
         </VBox>
     </right>
+
     <center>
-        <Pane fx:id="boardPane"/>
+        <StackPane fx:id="boardPane"/>
     </center>
+
+    <background>
+        <Background>
+            <images>
+                <BackgroundImage>
+                    <image>
+                        <Image url="@../images/background.png" requestedWidth="960" requestedHeight="720" smooth="true"/>
+                    </image>
+                </BackgroundImage>
+            </images>
+        </Background>
+    </background>
 </BorderPane>

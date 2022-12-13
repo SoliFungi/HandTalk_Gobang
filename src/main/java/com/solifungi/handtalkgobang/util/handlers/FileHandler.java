@@ -94,7 +94,7 @@ public class FileHandler
             }
             /* Read from .htg */
             else{
-                GameConfigs.setTracer(true);
+                GameConfigs.setTracer(true); //
                 game.setGameTitle(scanner.nextLine());
                 analyzer = scanner.nextLine();
                 game.blackName = analyzer.split("-")[0];

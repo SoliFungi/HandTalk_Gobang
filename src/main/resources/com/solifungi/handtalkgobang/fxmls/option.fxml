@@ -63,7 +63,7 @@
                 <!--> 是否全屏 <-->
                 <Label text="%text.fullscreen" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
                 <HBox spacing="10" GridPane.rowIndex="2" GridPane.columnIndex="1">
-                    <RadioButton text="Fullscreen" toggleGroup="$fullscreen" onAction="#setScreen"/>
+                    <RadioButton text="Fullscreen" toggleGroup="$fullscreen" onAction="#setScreen" disable="true"/>
                     <RadioButton text="Window" toggleGroup="$fullscreen" onAction="#setScreen"/>
                 </HBox>
 

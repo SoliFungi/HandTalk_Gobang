@@ -30,11 +30,11 @@ import java.util.ArrayList;
 
 public class GameController implements IHandleStage
 {
-    public static double stageWidth, stageHeight;
+    public static double boardPaneHeight = 720; // Init not used, just in case
     public static boolean vsAI = false;
 
-    @FXML Pane boardPane = new Pane();
-    @FXML BorderPane gamePane; // The pane fills the whole game scene. (Assigned before method <initialize>)
+    @FXML public StackPane boardPane = new StackPane();
+    @FXML public BorderPane gamePane; // The pane fills the whole game scene. (Assigned before method <initialize>)
     @FXML MenuBar menuBar;
     @FXML MenuItem switcher;
     @FXML CheckMenuItem pieceEraser, branchEraser, screenMode, showAxis, showPieceNum;
@@ -50,30 +50,29 @@ public class GameController implements IHandleStage
     /* Init Methods */
     @FXML
     private void initialize(){
-        initGame(new GobangGame());
-
         menuBar.setPrefWidth(gamePane.getWidth());
         gamePane.widthProperty().addListener(ob -> menuBar.setPrefWidth(gamePane.getWidth()));
 
-        if(!vsAI){
-            switcher.setDisable(true);
-        }
-
+        if(!vsAI) switcher.setDisable(true);
         if(GameConfigs.isGameTraced()){
             pieceEraser.setDisable(true);
             branchEraser.setDisable(false);
-        }
-        else{
+        }else{
             branchEraser.setDisable(true);
             pieceEraser.setDisable(false);
         }
+
+        HandTalkApp.currentGame = new GobangGame();
+        Button button = new Button(HandTalkApp.i18n.getString("button.start_game"));
+        button.setFont(new Font(22));
+        button.setOnAction(e -> initGame());
+        boardPane.getChildren().add(button);
     }
 
-    public void initGame(GobangGame game){
-        HandTalkApp.currentGame = game;
-        stageWidth = gamePane.getMinWidth(); // fullscreen?
-        stageHeight = gamePane.getMinHeight();
-        ChessBoardPane chessBoard = new ChessBoardPane(HandTalkApp.currentGame);
+    public void initGame(){
+        GobangGame game = HandTalkApp.currentGame;
+        boardPaneHeight = boardPane.getHeight();
+        ChessBoardPane chessBoard = new ChessBoardPane(game);
         HandTalkApp.currentChessboard = chessBoard;
         boardPane.getChildren().clear();
         boardPane.getChildren().add(chessBoard);
@@ -136,7 +135,8 @@ public class GameController implements IHandleStage
         );
 
         File file = fileLoader.showOpenDialog(handler.getStage(Reference.GAME));
-        initGame(FileHandler.readGame(file));
+        HandTalkApp.currentGame = FileHandler.readGame(file);
+        initGame();
     }
 
     /* FXML EventHandler Methods */
@@ -148,7 +148,8 @@ public class GameController implements IHandleStage
             ok.setOnAction(event -> openGameSaver(HandTalkApp.currentGame));
             alert.showAndWait();
         }
-        initGame(new GobangGame());
+        HandTalkApp.currentGame = new GobangGame();
+        initGame();
     }
 
     @FXML
@@ -197,7 +198,7 @@ public class GameController implements IHandleStage
     @FXML
     protected void setPVP(){
         vsAI = false;
-        // stop ai engine
+        // stop AI engine
     }
 
     @FXML
@@ -263,7 +264,7 @@ public class GameController implements IHandleStage
         handler.loadStage(Reference.OPTION_IN, Reference.OPTION_CSS, StageStyle.UTILITY);
     }
 
-
+    /* Chessboard Click Event Handlers */
     class ChessPlaceHandler implements EventHandler<MouseEvent>{
         GobangGame game = HandTalkApp.currentGame;
         ChessBoardPane chessBoard = HandTalkApp.currentChessboard;
@@ -274,6 +275,9 @@ public class GameController implements IHandleStage
             int xPos = (int) (event.getX() / cl);
             int yPos = (int) (event.getY() / cl);
             if(game.playRound(xPos, yPos)){
+
+//                //Some multithreading stuff
+//
 //                chessBoard.setOnMouseClicked(null);
 //                final Runnable acceptInput = () -> {
 //                    try{
@@ -305,9 +309,7 @@ public class GameController implements IHandleStage
             int xPos = (int) (event.getX() / cl);
             int yPos = (int) (event.getY() / cl);
             try{
-                System.out.println(game.getGameManual()[xPos][yPos]);
                 ChessPiece toRemove = new ChessPiece(Side.bySign(game.getGameManual()[xPos][yPos]), xPos, yPos);
-
                 game.getPiecesList().remove(toRemove);
                 game.setPieceCount(game.getPiecesList().size());
                 game.rewriteManualFromList();
